@@ -1,9 +1,9 @@
 from fastapi import FastAPI
-from app.api.v1.api import router as api_vi_router
+from app.api.main import api_router
 
 
 app = FastAPI()
 
 
 # Routers
-app.include_router(api_vi_router, prefix="/api/v1")
+app.include_router(api_router, prefix="/api/v1") 
