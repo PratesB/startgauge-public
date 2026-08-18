@@ -1,7 +1,7 @@
 from fastapi import APIRouter, Depends, status, Response, Request, HTTPException
 from sqlalchemy.ext.asyncio import AsyncSession
 from app.users.schemas import UserCreateSchema, UserReadSchema, UserLoginSchema, TokenSchema
-from app.users.services import create_user, authenticate_user, refresh_access_token
+from app.users.services import create_user, authenticate_user, refresh_access_token, logout_user
 from redis.asyncio import Redis
 from app.core.database import get_async_session, get_redis
 from app.core.config import settings
@@ -63,3 +63,25 @@ async def refresh_token(
     )
     
     return TokenSchema(access_token=access_token, token_type="bearer")
+
+
+@router.post("/logout", status_code=status.HTTP_204_NO_CONTENT)
+async def logout(
+    request: Request,
+    response: Response,
+    redis: Redis = Depends(get_redis)
+):
+
+    current_refresh_token = request.cookies.get("refresh_token")
+    
+
+    if current_refresh_token:
+        await logout_user(redis, current_refresh_token)
+        
+
+    response.delete_cookie(
+        key="refresh_token",
+        httponly=True,       
+        secure=True,         
+        samesite="lax",
+    )

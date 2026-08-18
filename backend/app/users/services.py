@@ -105,3 +105,26 @@ async def refresh_access_token(redis: Redis, refresh_token: str) -> tuple[str, s
     new_refresh_token = create_refresh_token(data={"sub": user_id})
     
     return new_access_token, new_refresh_token
+
+
+
+
+async def logout_user(redis: Redis, refresh_token: str):
+
+    try:
+        payload = jwt.decode(refresh_token, settings.SECRET_KEY, algorithms=[settings.ALGORITHM])
+        jti: str = payload.get("jti")
+        
+        if not jti:
+            return
+            
+        exp = payload.get("exp")
+        now = datetime.now(timezone.utc).timestamp()
+        token_time_to_live = int(exp - now) if exp else settings.REFRESH_TOKEN_EXPIRE_DAYS * 24 * 60 * 60
+        
+
+        if token_time_to_live > 0:
+            await redis.setex(f"blacklist:{jti}", token_time_to_live, "revoked")
+            
+    except jwt.PyJWTError:
+        pass
