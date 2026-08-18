@@ -2,9 +2,13 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy import select
 from fastapi import HTTPException, status
 from app.users.models import User
-from app.users.schemas import UserCreateSchema
-from app.core.security import get_password_hash
-
+from app.users.schemas import UserCreateSchema, UserLoginSchema, TokenSchema
+from app.core.security import (
+    get_password_hash,
+    verify_password,
+    create_access_token,
+    create_refresh_token
+)
 
 from sqlalchemy.exc import IntegrityError
 
@@ -39,3 +43,22 @@ async def create_user(session: AsyncSession, user_schema: UserCreateSchema) -> U
             status_code=status.HTTP_400_BAD_REQUEST,
             detail="An error occurred while trying to save the user into the database.",
         )
+
+
+async def authenticate_user(session: AsyncSession, user_schema: UserLoginSchema) -> tuple[str, str]:
+    existing_user = select(User).where(User.email == user_schema.email)
+    result = await session.execute(existing_user)
+    user = result.scalars().first()
+    
+
+    if not user or not verify_password(user_schema.password, user.password):
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail="Incorrect email or password",
+        )
+        
+
+    access_token = create_access_token(data={"sub": user.id})
+    refresh_token = create_refresh_token(data={"sub": user.id})
+    
+    return access_token, refresh_token
