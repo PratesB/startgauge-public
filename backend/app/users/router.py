@@ -2,12 +2,17 @@ from fastapi import APIRouter, Depends, status, Response, Request, HTTPException
 from sqlalchemy.ext.asyncio import AsyncSession
 from app.users.schemas import UserCreateSchema, UserReadSchema, UserLoginSchema, TokenSchema
 from app.users.services import create_user, authenticate_user, refresh_access_token, logout_user
+from app.users.dependencies import get_current_user
+from app.users.models import User
 from redis.asyncio import Redis
 from app.core.database import get_async_session, get_redis
 from app.core.config import settings
 
 
 router = APIRouter()
+
+
+
 
 @router.post("/register", response_model=UserReadSchema, status_code=status.HTTP_201_CREATED)
 async def register_user(user: UserCreateSchema, session: AsyncSession = Depends(get_async_session)):
@@ -65,6 +70,8 @@ async def refresh_token(
     return TokenSchema(access_token=access_token, token_type="bearer")
 
 
+
+
 @router.post("/logout", status_code=status.HTTP_204_NO_CONTENT)
 async def logout(
     request: Request,
@@ -85,3 +92,10 @@ async def logout(
         secure=True,         
         samesite="lax",
     )
+
+
+
+
+@router.get("/me", response_model=UserReadSchema, status_code=status.HTTP_200_OK)
+async def read_users_me(current_user: User = Depends(get_current_user)):
+    return current_user
