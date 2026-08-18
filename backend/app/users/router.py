@@ -1,7 +1,7 @@
 from fastapi import APIRouter, Depends, status, Response, Request, HTTPException
 from sqlalchemy.ext.asyncio import AsyncSession
-from app.users.schemas import UserCreateSchema, UserReadSchema, UserLoginSchema, TokenSchema
-from app.users.services import create_user, authenticate_user, refresh_access_token, logout_user
+from app.users.schemas import UserCreateSchema, UserReadSchema, UserLoginSchema, TokenSchema, UserUpdateSchema, UserPasswordUpdateSchema
+from app.users.services import create_user, authenticate_user, refresh_access_token, logout_user, update_user_profile, update_user_password
 from app.users.dependencies import get_current_user
 from app.users.models import User
 from redis.asyncio import Redis
@@ -15,7 +15,10 @@ router = APIRouter()
 
 
 @router.post("/register", response_model=UserReadSchema, status_code=status.HTTP_201_CREATED)
-async def register_user(user: UserCreateSchema, session: AsyncSession = Depends(get_async_session)):
+async def register_user(
+    user: UserCreateSchema, 
+    session: AsyncSession = Depends(get_async_session)
+):
     new_user = await create_user(session, user)
     return new_user
 
@@ -48,14 +51,15 @@ async def login(
 async def refresh_token(
     request: Request,
     response: Response,
-    redis: Redis = Depends(get_redis)
+    redis: Redis = Depends(get_redis),
+    session: AsyncSession = Depends(get_async_session)
 ):
 
     current_refresh_token = request.cookies.get("refresh_token")
     if not current_refresh_token:
         raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Refresh token not provided")
         
-    access_token, new_refresh_token = await refresh_access_token(redis, current_refresh_token)
+    access_token, new_refresh_token = await refresh_access_token(redis, session, current_refresh_token)
     
 
     response.set_cookie(
@@ -99,3 +103,25 @@ async def logout(
 @router.get("/me", response_model=UserReadSchema, status_code=status.HTTP_200_OK)
 async def read_users_me(current_user: User = Depends(get_current_user)):
     return current_user
+
+
+
+@router.patch("/me", response_model=UserReadSchema, status_code=status.HTTP_200_OK)
+async def update_user(
+    user_update: UserUpdateSchema,
+    current_user: User = Depends(get_current_user),
+    session: AsyncSession = Depends(get_async_session)
+):
+
+    updated_user = await update_user_profile(session, current_user, user_update)
+    return updated_user
+
+
+@router.patch("/password", status_code=status.HTTP_204_NO_CONTENT)
+async def update_password(
+    password_data: UserPasswordUpdateSchema,
+    current_user: User = Depends(get_current_user),
+    session: AsyncSession = Depends(get_async_session)
+):
+
+    await update_user_password(session, current_user, password_data)

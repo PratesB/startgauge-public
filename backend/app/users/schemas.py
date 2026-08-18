@@ -1,11 +1,13 @@
 from pydantic import BaseModel, EmailStr, ConfigDict
 from datetime import datetime
+from typing import Optional
 
 
 class UserCreateSchema(BaseModel):
     name: str
     email: EmailStr
     password: str
+
 
 
 class UserReadSchema(BaseModel):
@@ -16,6 +18,19 @@ class UserReadSchema(BaseModel):
     updated_at: datetime
 
     model_config = ConfigDict(from_attributes=True)
+
+
+
+class UserUpdateSchema(BaseModel):
+    name: Optional[str] = None
+    email: Optional[EmailStr] = None
+
+
+class UserPasswordUpdateSchema(BaseModel):
+    old_password: str
+    new_password: str
+
+
 
 
 class UserLoginSchema(BaseModel):

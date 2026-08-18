@@ -28,8 +28,9 @@ async def get_current_user(
         payload = jwt.decode(token, settings.SECRET_KEY, algorithms=[settings.ALGORITHM])
         user_id: str = payload.get("sub")
         jti: str = payload.get("jti")
+        security_stamp: int = payload.get("security_stamp")
         
-        if user_id is None or jti is None:
+        if user_id is None or jti is None or security_stamp is None:
             raise credentials_exception
             
         is_blacklisted = await redis.get(f"blacklist:{jti}")
@@ -46,6 +47,10 @@ async def get_current_user(
     user = result.scalars().first()
     
     if user is None:
+        raise credentials_exception
+        
+ 
+    if user.security_stamp != security_stamp:
         raise credentials_exception
         
     return user
