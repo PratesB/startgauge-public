@@ -14,6 +14,7 @@ class UserReadSchema(BaseModel):
     id: str
     name: str
     email: EmailStr
+    professional_background: Optional[str] = None
     created_at: datetime
     updated_at: datetime
 
@@ -24,6 +25,7 @@ class UserReadSchema(BaseModel):
 class UserUpdateSchema(BaseModel):
     name: Optional[str] = None
     email: Optional[EmailStr] = None
+    professional_background: Optional[str] = None
 
 
 class UserPasswordUpdateSchema(BaseModel):
