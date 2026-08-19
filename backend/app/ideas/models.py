@@ -21,3 +21,4 @@ class Idea(Base):
     updated_at = Column(DateTime(timezone=True), server_default=func.now(), onupdate=func.now(), nullable=False)
 
     user = relationship("User", back_populates="ideas")
+    canvases = relationship("Canvas", back_populates="idea", cascade="all, delete-orphan")
