@@ -1,11 +1,12 @@
 import uuid
-from sqlalchemy import Column, String, DateTime, Text, ForeignKey
+from sqlalchemy import Column, String, DateTime, Text, ForeignKey, UniqueConstraint
 from sqlalchemy.orm import relationship
 from sqlalchemy.sql import func
 from app.core.database import Base
 
 class Idea(Base):
     __tablename__ = "ideas"
+    __table_args__ = (UniqueConstraint('user_id', 'title', name='unique_user_idea_title'),)
 
     id = Column(String(36), primary_key=True, default=lambda: str(uuid.uuid4()), index=True)
     

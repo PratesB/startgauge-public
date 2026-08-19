@@ -5,6 +5,7 @@ from fastapi import HTTPException, status
 from app.ideas.models import Idea
 from app.ideas.schemas import IdeaCreateSchema, IdeaUpdateSchema
 from app.users.models import User
+from sqlalchemy.exc import IntegrityError
 
 
 
@@ -33,17 +34,23 @@ async def create_idea(
         user_id=user.id
     )
     
-    db.add(new_idea)
-    await db.commit()
-    await db.refresh(new_idea)
-    return new_idea
-
+    try:
+        db.add(new_idea)
+        await db.commit()
+        await db.refresh(new_idea)
+        return new_idea
+        
+    except IntegrityError:
+        await db.rollback()
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST, 
+            detail="You already have an idea with this title."
+        )
 
 
 async def list_user_ideas(db: AsyncSession, user_id: str) -> Sequence[Idea]:
     all_ideas = await db.execute(select(Idea).where(Idea.user_id == user_id))
     return all_ideas.scalars().all()
-
 
 
 async def get_idea_by_id(
@@ -78,11 +85,18 @@ async def update_idea(
     for key, value in update_dict.items():
         setattr(idea, key, value)
         
-    db.add(idea)
-    await db.commit()
-    await db.refresh(idea)
-    return idea
-
+    try:
+        db.add(idea)
+        await db.commit()
+        await db.refresh(idea)
+        return idea
+        
+    except IntegrityError:
+        await db.rollback()
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST, 
+            detail="You already have an idea with this title."
+        )
 
 
 async def delete_idea(
