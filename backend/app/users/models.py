@@ -19,4 +19,4 @@ class User(Base):
     updated_at = Column(DateTime(timezone=True), server_default=func.now(), onupdate=func.now(), nullable=False)
 
     ideas = relationship("Idea", back_populates="user", cascade="all, delete-orphan")
-
+    canvases = relationship("Canvas", back_populates="user", cascade="all, delete-orphan")
