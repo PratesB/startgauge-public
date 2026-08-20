@@ -16,19 +16,6 @@ class CanvasSchema(BaseModel):
 
 
 
-class CanvasReadSchema(CanvasSchema):
-    id: str
-    idea_id: str
-    user_id: str
-    version: int
-    created_at: datetime
-    updated_at: datetime
-    feedback: Optional[FeedbackReadSchema] = None
-
-    model_config = ConfigDict(from_attributes=True)
-
-
-
 class FeedbackSchema(BaseModel):
     founder_strengths: str
     execution_gaps: str
@@ -40,5 +27,17 @@ class FeedbackReadSchema(FeedbackSchema):
     canvas_id: str
     created_at: datetime
     updated_at: datetime
+
+    model_config = ConfigDict(from_attributes=True)
+
+
+class CanvasReadSchema(CanvasSchema):
+    id: str
+    idea_id: str
+    user_id: str
+    version: int
+    created_at: datetime
+    updated_at: datetime
+    feedback: Optional[FeedbackReadSchema] = None
 
     model_config = ConfigDict(from_attributes=True)
