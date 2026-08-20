@@ -35,7 +35,7 @@ export default function RegisterPage() {
 
       
       localStorage.setItem("access_token", loginData.access_token);
-      router.push("/dashboard");
+      router.push("/onboarding");
 
     } catch (err: any) {
       setError(err.message || "Error creating account. Please try again.");
