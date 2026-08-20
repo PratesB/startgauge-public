@@ -24,13 +24,15 @@ async def generate_ai_canvas(
             detail="Idea not found"
         )
         
+    user_background = idea.team_background if idea.team_background else "Background not informed by user"
+    
     research_report = await run_research_agent(
         idea_title=idea.title,
         idea_description=idea.description,
+        user_background=user_background,
         country=idea.country
     )
-    
-    user_background = idea.team_background if idea.team_background else "Background not informed by user"
+
     
     canvas_schema = await run_business_agent(
         idea_title=idea.title,
@@ -46,6 +48,9 @@ async def generate_ai_canvas(
         canvas_input=canvas_schema, 
         user_id=user_id
     )
+    
+
+    new_canvas.feedback = None
     
     return new_canvas
 

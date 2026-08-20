@@ -13,6 +13,8 @@ class CanvasSchema(BaseModel):
     key_activities: Optional[str] = None
     key_partnerships: Optional[str] = None
     cost_structure: Optional[str] = None
+    
+    model_config = ConfigDict(from_attributes=True)
 
 
 
