@@ -15,5 +15,8 @@ class Settings:
     # Redis
     REDIS_URL = config("REDIS_URL", cast=str)
     
+    # Gemini AI
+    GEMINI_API_KEY = config("GEMINI_API_KEY", cast=str)
+    
 
 settings = Settings()

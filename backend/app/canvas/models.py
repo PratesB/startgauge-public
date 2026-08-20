@@ -33,3 +33,21 @@ class Canvas(Base):
 
     idea = relationship("Idea", back_populates="canvases")
     user = relationship("User", back_populates="canvases")
+    feedback = relationship("Feedback", back_populates="canvas", uselist=False, cascade="all, delete-orphan")
+
+
+
+class Feedback(Base):
+    __tablename__ = "feedbacks"
+
+    id = Column(String(36), primary_key=True, default=lambda: str(uuid.uuid4()), index=True)
+    canvas_id = Column(String(36), ForeignKey("canvases.id", ondelete="CASCADE"), unique=True, nullable=False)
+    
+    founder_strengths = Column(Text, nullable=False)
+    execution_gaps = Column(Text, nullable=False)
+    recommended_actions = Column(Text, nullable=False)
+    
+    created_at = Column(DateTime(timezone=True), server_default=func.now(), nullable=False)
+    updated_at = Column(DateTime(timezone=True), server_default=func.now(), onupdate=func.now(), nullable=False)
+
+    canvas = relationship("Canvas", back_populates="feedback")
