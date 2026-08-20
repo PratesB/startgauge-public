@@ -25,3 +25,9 @@ class CanvasReadSchema(CanvasSchema):
     updated_at: datetime
 
     model_config = ConfigDict(from_attributes=True)
+
+class FeedbackSchema(BaseModel):
+    founder_strengths: str
+    execution_gaps: str
+    recommended_actions: str
+
