@@ -3,12 +3,12 @@
 import { useEffect, useState } from "react";
 import { fetchAPI } from "@/lib/api";
 
-import MetricsGrid from "../_components/MetricsGrid";
-import PortfolioStrength from "../_components/PortfolioStrength";
-import ProInsightsCard from "../_components/ProInsightsCard";
-import InvestorMatchesCard from "../_components/InvestorMatchesCard";
-import SkillGapsCard from "../_components/SkillGapsCard";
-import NewsAlertsCard from "../_components/NewsAlertsCard";
+import MetricsGrid from "./_components/MetricsGrid";
+import PortfolioStrength from "./_components/PortfolioStrength";
+import ProInsightsCard from "./_components/ProInsightsCard";
+import InvestorMatchesCard from "./_components/InvestorMatchesCard";
+import SkillGapsCard from "./_components/SkillGapsCard";
+import NewsAlertsCard from "./_components/NewsAlertsCard";
 
 export default function DashboardPage() {
   const [stats, setStats] = useState({ ideas: 0, canvases: 0, feedbacks: 0 });
