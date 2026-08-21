@@ -25,7 +25,19 @@ export async function fetchAPI(endpoint: string, options: RequestInit = {}) {
 
   if (!response.ok) {
     const errorData = await response.json().catch(() => ({}));
-    throw new Error(errorData.detail || "Error in backend request");
+    let errorMessage = "Error in backend request";
+    
+    if (errorData.detail) {
+      if (typeof errorData.detail === 'string') {
+        errorMessage = errorData.detail;
+      } else if (Array.isArray(errorData.detail)) {
+        errorMessage = errorData.detail[0]?.msg || JSON.stringify(errorData.detail);
+      } else {
+        errorMessage = JSON.stringify(errorData.detail);
+      }
+    }
+    
+    throw new Error(errorMessage);
   }
 
 

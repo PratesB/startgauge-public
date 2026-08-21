@@ -62,9 +62,14 @@ export default function NewIdeaForm() {
         
         {/* Title */}
         <div>
-          <label htmlFor="title" className="block text-sm font-bold text-on-surface mb-2 ml-1">
-            Idea Title <span className="text-error-red">*</span>
-          </label>
+          <div className="flex justify-between items-end mb-2 ml-1 pr-1">
+            <label htmlFor="title" className="block text-sm font-bold text-on-surface">
+              Idea Title <span className="text-error-red">*</span>
+            </label>
+            <span className={`text-xs font-semibold ${formData.title.length >= 200 ? 'text-error-red' : 'text-text-muted/60'}`}>
+              {formData.title.length} / 200
+            </span>
+          </div>
           <div className="relative group">
             <span className="material-symbols-outlined absolute left-5 top-1/2 -translate-y-1/2 text-primary/40 group-focus-within:text-primary transition-colors">
               lightbulb
@@ -74,6 +79,7 @@ export default function NewIdeaForm() {
               id="title" 
               name="title"
               required
+              maxLength={200}
               value={formData.title}
               onChange={handleChange}
               placeholder="e.g. Acme AI"
@@ -84,9 +90,14 @@ export default function NewIdeaForm() {
 
         {/* Description */}
         <div>
-          <label htmlFor="description" className="block text-sm font-bold text-on-surface mb-1 ml-1">
-            Description <span className="text-error-red">*</span>
-          </label>
+          <div className="flex justify-between items-end mb-1 ml-1 pr-1">
+            <label htmlFor="description" className="block text-sm font-bold text-on-surface">
+              Description <span className="text-error-red">*</span>
+            </label>
+            <span className={`text-xs font-semibold ${formData.description.length >= 3000 ? 'text-error-red' : 'text-text-muted/60'}`}>
+              {formData.description.length} / 3000
+            </span>
+          </div>
           <p className="text-sm text-text-muted mb-3 ml-1">Explain the problem you're solving and your proposed solution.</p>
           <div className="relative group">
             <span className="material-symbols-outlined absolute left-5 top-5 text-primary/40 group-focus-within:text-primary transition-colors">
@@ -97,6 +108,7 @@ export default function NewIdeaForm() {
               name="description"
               required
               rows={6}
+              maxLength={3000}
               value={formData.description}
               onChange={handleChange}
               placeholder="We are building a platform that helps..."
@@ -127,9 +139,14 @@ export default function NewIdeaForm() {
 
           {/* Team Background */}
           <div>
-            <label htmlFor="team_background" className="block text-sm font-bold text-on-surface mb-1 ml-1">
-              Team Background <span className="text-text-muted font-normal">(Optional)</span>
-            </label>
+            <div className="flex justify-between items-end mb-1 ml-1 pr-1">
+              <label htmlFor="team_background" className="block text-sm font-bold text-on-surface">
+                Team Background <span className="text-text-muted font-normal">(Optional)</span>
+              </label>
+              <span className={`text-xs font-semibold ${formData.team_background.length >= 1500 ? 'text-error-red' : 'text-text-muted/60'}`}>
+                {formData.team_background.length} / 1500
+              </span>
+            </div>
             <p className="text-sm text-text-muted mb-3 ml-1">Any specific unfair advantages or deep expertise?</p>
             
             <div className="relative group">
@@ -140,6 +157,7 @@ export default function NewIdeaForm() {
                 id="team_background" 
                 name="team_background"
                 rows={4}
+                maxLength={1500}
                 value={formData.team_background}
                 onChange={handleChange}
                 disabled={formData.use_my_saved_background}
