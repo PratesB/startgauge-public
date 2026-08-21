@@ -1,11 +1,24 @@
 // Backend URL FastAPI
 const API_URL = "http://localhost:8000";
 
+let isRefreshing = false;
+let failedQueue: Array<{ resolve: (token: string | null) => void; reject: (err: any) => void }> = [];
+
+const processQueue = (error: Error | null, token: string | null = null) => {
+  failedQueue.forEach((prom) => {
+    if (error) {
+      prom.reject(error);
+    } else {
+      prom.resolve(token);
+    }
+  });
+  failedQueue = [];
+};
+
 export async function fetchAPI(endpoint: string, options: RequestInit = {}, _isRetry = false): Promise<any> {
   
   // get token from localStorage
   const token = typeof window !== "undefined" ? localStorage.getItem("access_token") : null;
-
 
   // add 'Bearer token' automatically if user is logged in
   const headers = {
@@ -14,7 +27,6 @@ export async function fetchAPI(endpoint: string, options: RequestInit = {}, _isR
     ...options.headers,
   };
 
-
   // credentials: "include" to receive the httpOnly cookie (refresh_token)
   const response = await fetch(`${API_URL}${endpoint}`, {
     credentials: "include",
@@ -22,9 +34,25 @@ export async function fetchAPI(endpoint: string, options: RequestInit = {}, _isR
     headers,
   });
 
-
   // Handle Token Expiration (401 Unauthorized)
   if (response.status === 401 && !_isRetry && endpoint !== "/api/v1/users/login" && endpoint !== "/api/v1/users/refresh") {
+    
+    if (isRefreshing) {
+      // If a refresh is already in progress, put this request in a queue to wait
+      return new Promise<string | null>((resolve, reject) => {
+        failedQueue.push({ resolve, reject });
+      })
+      .then((newToken) => {
+        // Once the queue is processed with a new token, retry this request
+        return fetchAPI(endpoint, options, true);
+      })
+      .catch((err) => {
+        return Promise.reject(err);
+      });
+    }
+
+    isRefreshing = true;
+
     try {
       // Attempt to refresh the token using the httpOnly cookie
       const refreshResponse = await fetch(`${API_URL}/api/v1/users/refresh`, {
@@ -34,9 +62,15 @@ export async function fetchAPI(endpoint: string, options: RequestInit = {}, _isR
 
       if (refreshResponse.ok) {
         const refreshData = await refreshResponse.json();
+        const newToken = refreshData.access_token;
+        
         if (typeof window !== "undefined") {
-          localStorage.setItem("access_token", refreshData.access_token);
+          localStorage.setItem("access_token", newToken);
         }
+        
+        isRefreshing = false;
+        processQueue(null, newToken);
+        
         // Retry the original request with the new token
         return fetchAPI(endpoint, options, true);
       } else {
@@ -44,16 +78,33 @@ export async function fetchAPI(endpoint: string, options: RequestInit = {}, _isR
         if (typeof window !== "undefined") {
           localStorage.removeItem("access_token");
         }
-        throw new Error("Session expired. Please log in again.");
+        
+        const error = new Error("Session expired. Please log in again.");
+        isRefreshing = false;
+        processQueue(error, null);
+        
+        // Force redirect to login page for a clean UX
+        if (typeof window !== "undefined" && window.location.pathname !== "/login") {
+          window.location.href = "/login";
+        }
+        
+        throw error;
       }
     } catch (refreshErr) {
       if (typeof window !== "undefined") {
         localStorage.removeItem("access_token");
       }
+      
+      isRefreshing = false;
+      processQueue(refreshErr as Error, null);
+      
+      if (typeof window !== "undefined" && window.location.pathname !== "/login") {
+        window.location.href = "/login";
+      }
+      
       throw refreshErr;
     }
   }
-
 
   // Handle generic errors
   if (!response.ok) {
@@ -72,7 +123,6 @@ export async function fetchAPI(endpoint: string, options: RequestInit = {}, _isR
     
     throw new Error(errorMessage);
   }
-
   
   // Logout (return null) 
   if (response.status === 204) {
