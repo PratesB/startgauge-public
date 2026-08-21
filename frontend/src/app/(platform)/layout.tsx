@@ -55,13 +55,26 @@ export default function DashboardLayout({
       : "text-text-muted group-hover:text-primary transition-colors";
   };
 
-  const getBreadcrumb = (path: string) => {
-    if (path === "/dashboard") return "Dashboard";
-    if (path === "/ideas") return "My Ideas";
-    if (path === "/ideas/new") return "New Idea";
-    if (path.startsWith("/ideas/")) return "Idea Details";
-    if (path.includes("/profile")) return "Profile";
-    return "App";
+  const getBreadcrumbs = (path: string) => {
+    const crumbs: Array<{ label: string; href: string | null }> = [{ label: "StartGauge", href: null }];
+    
+    if (path === "/dashboard") {
+      crumbs.push({ label: "Dashboard", href: null });
+    } else if (path === "/ideas") {
+      crumbs.push({ label: "My Ideas", href: null });
+    } else if (path === "/ideas/new") {
+      crumbs.push({ label: "Ideas", href: "/ideas" });
+      crumbs.push({ label: "New Idea", href: null });
+    } else if (path.startsWith("/ideas/")) {
+      crumbs.push({ label: "Ideas", href: "/ideas" });
+      crumbs.push({ label: "Idea Details", href: null });
+    } else if (path.includes("/profile")) {
+      crumbs.push({ label: "Profile", href: null });
+    } else {
+      crumbs.push({ label: "App", href: null });
+    }
+    
+    return crumbs;
   };
 
   return (
@@ -141,10 +154,27 @@ export default function DashboardLayout({
         <header className="fixed top-0 left-sidebar-width right-0 h-header-height bg-bg-deep/80 backdrop-blur-md z-40 border-b border-card-border/60 px-gutter-lg flex items-center justify-between">
           {/* Left: Greeting & Breadcrumbs */}
           <div className="flex flex-col justify-center">
-            <div className="flex items-center gap-1.5 text-label-sm text-text-muted font-medium">
-              <span>StartGauge</span>
-              <span className="material-symbols-outlined text-[14px]">chevron_right</span>
-              <span className="text-primary font-bold">{getBreadcrumb(pathname)}</span>
+            <div className="flex items-center gap-1.5 text-label-sm font-medium">
+              {getBreadcrumbs(pathname).map((crumb, index, arr) => {
+                const isLast = index === arr.length - 1;
+                return (
+                  <div key={index} className="flex items-center gap-1.5">
+                    {crumb.href && !isLast ? (
+                      <Link href={crumb.href} className="text-text-muted hover:text-primary transition-colors">
+                        {crumb.label}
+                      </Link>
+                    ) : (
+                      <span className={isLast ? "text-primary font-bold" : "text-text-muted"}>
+                        {crumb.label}
+                      </span>
+                    )}
+                    
+                    {!isLast && (
+                      <span className="material-symbols-outlined text-[14px] text-text-muted">chevron_right</span>
+                    )}
+                  </div>
+                );
+              })}
             </div>
           </div>
 
