@@ -55,6 +55,15 @@ export default function DashboardLayout({
       : "text-text-muted group-hover:text-primary transition-colors";
   };
 
+  const getBreadcrumb = (path: string) => {
+    if (path === "/dashboard") return "Dashboard";
+    if (path === "/ideas") return "My Ideas";
+    if (path === "/ideas/new") return "New Idea";
+    if (path.startsWith("/ideas/")) return "Idea Details";
+    if (path.includes("/profile")) return "Profile";
+    return "App";
+  };
+
   return (
     <div className="bg-bg-deep font-body-md text-on-surface antialiased min-h-screen flex">
       <aside className="fixed left-0 top-0 h-full w-sidebar-width bg-sidebar/90 backdrop-blur-xl z-50 flex flex-col border-r border-card-border/60">
@@ -135,7 +144,7 @@ export default function DashboardLayout({
             <div className="flex items-center gap-1.5 text-label-sm text-text-muted font-medium">
               <span>StartGauge</span>
               <span className="material-symbols-outlined text-[14px]">chevron_right</span>
-              <span className="text-primary font-bold">{pathname === "/dashboard" ? "Dashboard" : pathname === "/ideas" ? "My Ideas" : "Profile"}</span>
+              <span className="text-primary font-bold">{getBreadcrumb(pathname)}</span>
             </div>
           </div>
 

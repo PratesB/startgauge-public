@@ -29,7 +29,7 @@ async def create_idea(
     new_idea = Idea(
         title=idea_input.title,
         description=idea_input.description,
-        country=idea_input.country,
+        country="Finland",  # Hardcoded for this demo version
         team_background=final_background,
         user_id=user.id
     )
