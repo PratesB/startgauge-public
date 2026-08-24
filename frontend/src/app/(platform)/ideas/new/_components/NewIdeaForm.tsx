@@ -50,109 +50,94 @@ export default function NewIdeaForm() {
   };
 
   return (
-    <form onSubmit={handleSubmit} className="bg-card-surface border border-card-border rounded-[2.5rem] p-8 sm:p-12 shadow-[0_8px_40px_rgba(0,0,0,0.04)] relative">
+    <form onSubmit={handleSubmit} className="bg-white border border-slate-200 rounded-2xl p-6 sm:p-8 shadow-sm relative">
       {error && (
-        <div className="mb-8 p-5 bg-error-red/10 border border-error-red/20 rounded-2xl flex items-center gap-4 text-error-red">
-          <span className="material-symbols-outlined text-[24px]">error</span>
-          <p className="font-semibold">{error}</p>
+        <div className="mb-6 p-4 bg-red-50 border border-red-100 rounded-lg flex items-center gap-3 text-red-600 text-[13px]">
+          <span className="material-symbols-outlined text-[20px]">error</span>
+          <p className="font-medium">{error}</p>
         </div>
       )}
 
-      <div className="space-y-10 relative z-10">
+      <div className="space-y-8 relative z-10">
         
         {/* Title */}
         <div>
-          <div className="flex justify-between items-end mb-2 ml-1 pr-1">
-            <label htmlFor="title" className="block text-sm font-bold text-on-surface">
-              Idea Title <span className="text-error-red">*</span>
+          <div className="flex justify-between items-end mb-2">
+            <label htmlFor="title" className="block text-[11px] font-bold text-slate-500 uppercase tracking-wider">
+              Idea Title <span className="text-red-500">*</span>
             </label>
-            <span className={`text-xs font-semibold ${formData.title.length >= 200 ? 'text-error-red' : 'text-text-muted/60'}`}>
+            <span className={`text-[11px] font-medium ${formData.title.length >= 200 ? 'text-red-500' : 'text-slate-400'}`}>
               {formData.title.length} / 200
             </span>
           </div>
-          <div className="relative group">
-            <span className="material-symbols-outlined absolute left-5 top-1/2 -translate-y-1/2 text-primary/40 group-focus-within:text-primary transition-colors">
-              lightbulb
-            </span>
-            <input 
-              type="text" 
-              id="title" 
-              name="title"
-              required
-              maxLength={200}
-              value={formData.title}
-              onChange={handleChange}
-              placeholder="e.g. Acme AI"
-              className="w-full bg-surface-container-lowest border border-card-border rounded-2xl pl-14 pr-5 py-4 text-lg text-on-surface placeholder:text-text-muted/40 focus:outline-none focus:ring-2 focus:ring-primary/50 focus:border-transparent transition-all font-semibold shadow-inner"
-            />
-          </div>
+          <input 
+            type="text" 
+            id="title" 
+            name="title"
+            required
+            maxLength={200}
+            value={formData.title}
+            onChange={handleChange}
+            placeholder="e.g. Acme AI"
+            className="w-full bg-white border border-slate-200 rounded-lg px-4 py-3 text-[14px] text-slate-900 placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-slate-900 focus:border-transparent transition-all"
+          />
         </div>
 
         {/* Description */}
         <div>
-          <div className="flex justify-between items-end mb-1 ml-1 pr-1">
-            <label htmlFor="description" className="block text-sm font-bold text-on-surface">
-              Description <span className="text-error-red">*</span>
+          <div className="flex justify-between items-end mb-1">
+            <label htmlFor="description" className="block text-[11px] font-bold text-slate-500 uppercase tracking-wider">
+              Description <span className="text-red-500">*</span>
             </label>
-            <span className={`text-xs font-semibold ${formData.description.length >= 3000 ? 'text-error-red' : 'text-text-muted/60'}`}>
+            <span className={`text-[11px] font-medium ${formData.description.length >= 3000 ? 'text-red-500' : 'text-slate-400'}`}>
               {formData.description.length} / 3000
             </span>
           </div>
-          <p className="text-sm text-text-muted mb-3 ml-1">Explain the problem you're solving and your proposed solution.</p>
-          <div className="relative group">
-            <span className="material-symbols-outlined absolute left-5 top-5 text-primary/40 group-focus-within:text-primary transition-colors">
-              description
-            </span>
-            <textarea 
-              id="description" 
-              name="description"
-              required
-              rows={6}
-              maxLength={3000}
-              value={formData.description}
-              onChange={handleChange}
-              placeholder="We are building a platform that helps..."
-              className="w-full bg-surface-container-lowest border border-card-border rounded-2xl pl-14 pr-5 py-4 text-on-surface placeholder:text-text-muted/40 focus:outline-none focus:ring-2 focus:ring-primary/50 focus:border-transparent transition-all font-medium resize-y shadow-inner leading-relaxed"
-            ></textarea>
-          </div>
+          <p className="text-[13px] text-slate-500 mb-2">Explain the problem you're solving and your proposed solution.</p>
+          <textarea 
+            id="description" 
+            name="description"
+            required
+            rows={5}
+            maxLength={3000}
+            value={formData.description}
+            onChange={handleChange}
+            placeholder="We are building a platform that helps..."
+            className="w-full bg-white border border-slate-200 rounded-lg px-4 py-3 text-[14px] text-slate-900 placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-slate-900 focus:border-transparent transition-all resize-y"
+          ></textarea>
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-10">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
           {/* Target Market */}
           <div>
-            <h3 className="block text-sm font-bold text-on-surface mb-1 ml-1">
-              Target Market <span className="text-error-red">*</span>
+            <h3 className="block text-[11px] font-bold text-slate-500 uppercase tracking-wider mb-1">
+              Target Market <span className="text-red-500">*</span>
             </h3>
-            <p className="text-sm text-text-muted mb-3 ml-1">In this demo version, we are strictly focusing on the Finnish market.</p>
-            <div className="w-full bg-surface-container border border-card-border rounded-2xl px-5 py-4 flex items-center justify-between opacity-80 shadow-inner cursor-not-allowed">
-              <div className="flex items-center gap-3">
-                <img 
-                  src="https://flagcdn.com/fi.svg" 
-                  alt="Finland" 
-                  className="w-6 h-6 rounded-full object-cover shadow-sm grayscale-[10%]"
-                />
-                <span className="text-on-surface font-bold text-lg">Finland</span>
-              </div>
-              <span className="material-symbols-outlined text-text-muted/60" title="Locked to Finland in demo">lock</span>
+            <p className="text-[13px] text-slate-500 mb-3">In this demo version, we are strictly focusing on the Finnish market.</p>
+            <div className="inline-flex items-center gap-2 px-3 py-2 bg-slate-50 border border-slate-200 rounded-lg opacity-80 cursor-not-allowed">
+              <img 
+                src="https://flagcdn.com/fi.svg" 
+                alt="Finland" 
+                className="w-6 h-4 rounded-[2px] shadow-sm"
+              />
+              <span className="text-slate-700 font-medium text-[13px]">Finland</span>
+              <span className="material-symbols-outlined text-[14px] text-slate-400 ml-1" title="Locked to Finland in demo">lock</span>
             </div>
           </div>
 
           {/* Team Background */}
           <div>
-            <div className="flex justify-between items-end mb-1 ml-1 pr-1">
-              <label htmlFor="team_background" className="block text-sm font-bold text-on-surface">
-                Team Background <span className="text-text-muted font-normal">(Optional)</span>
+            <div className="flex justify-between items-end mb-1">
+              <label htmlFor="team_background" className="block text-[11px] font-bold text-slate-500 uppercase tracking-wider">
+                Team Background <span className="text-slate-400 font-normal capitalize">(Optional)</span>
               </label>
-              <span className={`text-xs font-semibold ${formData.team_background.length >= 1500 ? 'text-error-red' : 'text-text-muted/60'}`}>
+              <span className={`text-[11px] font-medium ${formData.team_background.length >= 1500 ? 'text-red-500' : 'text-slate-400'}`}>
                 {formData.team_background.length} / 1500
               </span>
             </div>
-            <p className="text-sm text-text-muted mb-3 ml-1">Any specific unfair advantages or deep expertise?</p>
+            <p className="text-[13px] text-slate-500 mb-3">Any specific unfair advantages or deep expertise?</p>
             
-            <div className="relative group">
-              <span className="material-symbols-outlined absolute left-5 top-5 text-primary/40 group-focus-within:text-primary transition-colors z-10">
-                groups
-              </span>
+            <div className="relative">
               <textarea 
                 id="team_background" 
                 name="team_background"
@@ -162,21 +147,21 @@ export default function NewIdeaForm() {
                 onChange={handleChange}
                 disabled={formData.use_my_saved_background}
                 placeholder="Our CTO has a PhD..."
-                className={`w-full bg-surface-container-lowest border border-card-border rounded-2xl pl-14 pr-5 py-4 text-on-surface placeholder:text-text-muted/40 focus:outline-none focus:ring-2 focus:ring-primary/50 focus:border-transparent transition-all font-medium resize-y shadow-inner relative ${formData.use_my_saved_background ? 'opacity-40 cursor-not-allowed bg-surface-container' : ''}`}
+                className={`w-full bg-white border border-slate-200 rounded-lg px-4 py-3 text-[14px] text-slate-900 placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-slate-900 focus:border-transparent transition-all resize-y ${formData.use_my_saved_background ? 'bg-slate-50 text-slate-400 cursor-not-allowed' : ''}`}
               ></textarea>
               
               {/* Overlay text when disabled */}
               {formData.use_my_saved_background && (
                 <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
-                  <span className="bg-surface-container-lowest px-4 py-1.5 rounded-full text-sm font-bold text-primary shadow-sm border border-primary/20 flex items-center gap-2">
-                    <span className="material-symbols-outlined text-[16px]">how_to_reg</span>
+                  <span className="bg-primary/5 px-3 py-1.5 rounded-md text-[12px] font-bold text-primary shadow-sm border border-primary/20 flex items-center gap-1.5 backdrop-blur-[2px]">
+                    <span className="material-symbols-outlined text-[14px]">how_to_reg</span>
                     Using Global Profile
                   </span>
                 </div>
               )}
             </div>
 
-            <label className="mt-4 flex items-center gap-3 cursor-pointer group ml-1 w-max">
+            <label className="mt-4 flex items-center gap-3 cursor-pointer w-max group">
               <div className="relative flex items-center">
                 <input 
                   type="checkbox" 
@@ -185,9 +170,9 @@ export default function NewIdeaForm() {
                   onChange={handleChange}
                   className="sr-only peer"
                 />
-                <div className="w-12 h-7 bg-surface-container border border-card-border rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-6 after:w-6 after:transition-all peer-checked:bg-gradient-to-r peer-checked:from-primary peer-checked:to-[#8247E5] group-hover:ring-4 group-hover:ring-primary/10 transition-all"></div>
+                <div className="w-10 h-[22px] bg-slate-200 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-slate-300 after:border after:rounded-full after:h-[18px] after:w-[18px] after:transition-all peer-checked:bg-primary transition-colors"></div>
               </div>
-              <span className="text-sm font-bold text-on-surface select-none group-hover:text-primary transition-colors">
+              <span className="text-[13px] font-medium text-slate-600 group-hover:text-primary transition-colors">
                 Use my saved Global Profile
               </span>
             </label>
@@ -195,16 +180,16 @@ export default function NewIdeaForm() {
         </div>
 
         {/* Submit Action */}
-        <div className="pt-8 mt-4 flex justify-end">
+        <div className="pt-6 mt-2 flex justify-end border-t border-slate-100">
           <button 
             type="submit" 
             disabled={loading}
-            className={`w-full sm:w-auto flex items-center justify-center gap-2 px-8 py-3.5 rounded-xl bg-gradient-to-r from-primary to-[#8247E5] text-white font-bold text-[15px] tracking-wide shadow-[0_4px_15px_rgba(109,59,215,0.3)] transition-all duration-300 ${loading ? 'opacity-70 cursor-not-allowed' : 'cursor-pointer hover:shadow-[0_8px_25px_rgba(109,59,215,0.5)] hover:-translate-y-0.5'}`}
+            className={`w-full sm:w-auto flex items-center justify-center gap-2 px-6 py-2.5 rounded-lg bg-slate-900 text-white font-medium text-[13px] transition-all ${loading ? 'opacity-70 cursor-not-allowed' : 'cursor-pointer hover:bg-slate-800 hover:shadow-md'}`}
           >
             {loading ? (
               <>
-                <span className="material-symbols-outlined animate-spin text-[24px]">progress_activity</span>
-                Analyzing Market...
+                <span className="material-symbols-outlined animate-spin text-[18px]">progress_activity</span>
+                Creating your idea...
               </>
             ) : (
               <>
