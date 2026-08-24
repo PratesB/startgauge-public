@@ -1,7 +1,7 @@
 "use client";
 
-import { useEffect, useState } from "react";
-import { useParams } from "next/navigation";
+import { useState, useEffect } from "react";
+import { useParams, useRouter } from "next/navigation";
 import Link from "next/link";
 import { fetchAPI } from "@/lib/api";
 
@@ -29,14 +29,15 @@ const getFlagUrl = (countryName: string) => {
 
 export default function IdeaDetailsPage() {
   const params = useParams();
+  const router = useRouter();
   const id = params.id as string;
 
   const [idea, setIdea] = useState<Idea | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
-  const [canvas, setCanvas] = useState<any>(null);
-  const isCanvasGenerated = !!canvas;
+  const [canvases, setCanvases] = useState<any[]>([]);
+  const isCanvasGenerated = canvases.length > 0;
   const [isGeneratingCanvas, setIsGeneratingCanvas] = useState(false);
   const [isGeneratingFeedback, setIsGeneratingFeedback] = useState(false);
 
@@ -47,11 +48,11 @@ export default function IdeaDetailsPage() {
         setIdea(data);
 
         try {
-          const canvasData = await fetchAPI(`/api/v1/canvas/${id}/latest`);
-          setCanvas(canvasData);
+          const historyData = await fetchAPI(`/api/v1/canvas/${id}/history`);
+          setCanvases(historyData || []);
         } catch (e) {
           // If 404 or error, canvas doesn't exist yet
-          setCanvas(null);
+          setCanvases([]);
         }
       } catch (err: any) {
         setError(err.message || "Failed to load idea");
@@ -70,23 +71,21 @@ export default function IdeaDetailsPage() {
       const newCanvas = await fetchAPI(`/api/v1/ai/generate-canvas/${id}`, {
         method: "POST"
       });
-      setCanvas(newCanvas);
+      setCanvases(prev => [newCanvas, ...prev]);
     } catch (err) {
       console.error("Failed to generate canvas:", err);
-
     } finally {
       setIsGeneratingCanvas(false);
     }
   };
 
-  const handleGenerateFeedback = async () => {
-    if (!canvas?.id) return;
+  const handleGenerateFeedbackForVersion = async (canvasId: string) => {
     setIsGeneratingFeedback(true);
     try {
-      const newFeedback = await fetchAPI(`/api/v1/ai/generate-feedback/${canvas.id}`, {
+      const newFeedback = await fetchAPI(`/api/v1/ai/generate-feedback/${canvasId}`, {
         method: "POST"
       });
-      setCanvas((prev: any) => ({ ...prev, feedback: newFeedback }));
+      setCanvases(prev => prev.map(c => c.id === canvasId ? { ...c, feedback: newFeedback } : c));
     } catch (err) {
       console.error("Failed to generate feedback:", err);
     } finally {
@@ -220,28 +219,14 @@ export default function IdeaDetailsPage() {
         </div>
       </div>
 
-      <div className="flex flex-col gap-1 mb-8 mt-16 pl-2 border-l-[3px] border-primary/40">
-        <div className="flex items-center gap-2">
-          <div className="w-8 h-8 rounded-lg bg-primary/10 flex items-center justify-center">
-            <span className="material-symbols-outlined text-primary text-[18px]">science</span>
-          </div>
-          <h2 className="text-2xl font-black text-on-surface tracking-tight">Validation Tools</h2>
-        </div>
-        <p className="text-text-muted text-sm ml-10">Put your hypotheses to the test.</p>
-      </div>
 
-      {/* Grid of Sections */}
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-
-        {/* Section 1: Business Model Canvas */}
-        <div className="bg-card-surface border border-card-border rounded-3xl p-8 shadow-[0_4px_20px_rgba(0,0,0,0.04)] relative overflow-hidden group hover:border-primary/40 hover:shadow-[0_8px_30px_rgba(109,59,215,0.08)] transition-all duration-500 flex flex-col justify-center h-full min-h-[300px]">
-
+      {!isCanvasGenerated ? (
+        <div className="mt-16 bg-card-surface border border-card-border rounded-3xl p-8 shadow-[0_4px_20px_rgba(0,0,0,0.04)] relative overflow-hidden group hover:border-primary/40 hover:shadow-[0_8px_30px_rgba(109,59,215,0.08)] transition-all duration-500 flex flex-col items-center justify-center min-h-[300px] text-center max-w-4xl mx-auto">
           {/* Background Image */}
           <div className="absolute inset-0 z-0 pointer-events-none">
             <img src="/icons/icon_canvas_3d.jpg" alt="" className="w-full h-full object-cover opacity-40 group-hover:opacity-60 group-hover:scale-105 transition-all duration-700" />
             <div className="absolute inset-0 bg-gradient-to-b from-card-surface/10 via-card-surface/60 to-card-surface"></div>
           </div>
-
           <div className="absolute top-0 right-0 w-64 h-64 bg-primary/5 blur-[80px] rounded-full pointer-events-none group-hover:bg-primary/10 transition-colors z-0"></div>
 
           <div className="relative z-10 flex flex-col items-center text-center">
@@ -254,95 +239,108 @@ export default function IdeaDetailsPage() {
           </div>
 
           <div className="relative z-10 flex justify-center w-full">
-            {!isCanvasGenerated ? (
-              <button
-                onClick={handleGenerateCanvas}
-                disabled={isGeneratingCanvas}
-                className={`px-8 py-3 rounded-xl font-bold transition-all flex items-center justify-center gap-2 text-sm
-                  ${isGeneratingCanvas
-                    ? 'bg-primary/15 text-primary cursor-not-allowed shadow-none border border-primary/20'
-                    : 'bg-gradient-to-r from-primary to-[#8247E5] text-white shadow-[0_4px_15px_rgba(109,59,215,0.3)] hover:shadow-[0_8px_25px_rgba(109,59,215,0.5)] hover:-translate-y-0.5 cursor-pointer'
-                  }`}
-              >
-                {isGeneratingCanvas ? (
-                  <>
-                    <span className="material-symbols-outlined animate-spin text-[18px]">refresh</span>
-                    Generating...
-                  </>
-                ) : (
-                  <>
-                    Generate Business Model Canvas
-                  </>
-                )}
-              </button>
-            ) : (
-              <div className="px-8 py-3 rounded-xl font-bold text-emerald-500 bg-emerald-500/10 border border-emerald-500/20 flex items-center justify-center gap-2 text-sm">
-                <span className="material-symbols-outlined text-[18px]">check_circle</span>
-                Canvas Ready to View
-              </div>
-            )}
-          </div>
-        </div>
-
-        {/* Section 2: Feedback Analysis */}
-        <div className={`bg-card-surface border rounded-3xl p-8 shadow-[0_4px_20px_rgba(0,0,0,0.04)] relative overflow-hidden group transition-all duration-500 flex flex-col justify-center h-full min-h-[300px]
-          ${isCanvasGenerated ? 'border-card-border hover:border-accent-yellow/40 hover:shadow-[0_8px_30px_rgba(234,179,8,0.08)]' : 'border-card-border/50 bg-card-surface/50 grayscale-[50%] opacity-80'}`}>
-
-          {/* Background Image */}
-          <div className="absolute inset-0 z-0 pointer-events-none">
-            <img src="/icons/icon_feedbacks_3d.jpg" alt="" className={`w-full h-full object-cover opacity-40 transition-all duration-700 ${isCanvasGenerated ? 'group-hover:opacity-60 group-hover:scale-105' : ''}`} />
-            <div className="absolute inset-0 bg-gradient-to-b from-card-surface/10 via-card-surface/60 to-card-surface"></div>
-          </div>
-
-          <div className="absolute top-0 right-0 w-64 h-64 bg-accent-yellow/5 blur-[80px] rounded-full pointer-events-none group-hover:bg-accent-yellow/10 transition-colors z-0"></div>
-
-          <div className="relative z-10 flex flex-col items-center text-center">
-            <h2 className="text-2xl font-black text-on-surface mb-3 tracking-tight">
-              Feedback Analysis
-            </h2>
-            <p className="text-text-muted text-sm mb-8 leading-relaxed max-w-sm">
-              Cross-reference your team's background with the Business Model Canvas to uncover founder strengths, identify execution gaps, and receive actionable recommendations.
-            </p>
-          </div>
-
-          <div className="relative z-10 flex justify-center w-full">
             <button
-              onClick={handleGenerateFeedback}
-              disabled={!isCanvasGenerated || isGeneratingFeedback || !!canvas?.feedback}
+              onClick={handleGenerateCanvas}
+              disabled={isGeneratingCanvas}
               className={`px-8 py-3 rounded-xl font-bold transition-all flex items-center justify-center gap-2 text-sm
-                ${(!isCanvasGenerated || !!canvas?.feedback)
-                  ? 'bg-surface-container-lowest border border-card-border text-text-muted/50 cursor-not-allowed'
-                  : isGeneratingFeedback
-                    ? 'bg-orange-500/15 text-orange-500 cursor-not-allowed shadow-none border border-orange-500/20'
-                    : 'bg-gradient-to-r from-orange-500 to-orange-600 text-white shadow-[0_4px_15px_rgba(249,115,22,0.3)] hover:shadow-[0_8px_25px_rgba(249,115,22,0.5)] hover:-translate-y-0.5 cursor-pointer'
+                ${isGeneratingCanvas
+                  ? 'bg-primary/15 text-primary cursor-not-allowed shadow-none border border-primary/20'
+                  : 'bg-gradient-to-r from-primary to-[#8247E5] text-white shadow-[0_4px_15px_rgba(109,59,215,0.3)] hover:shadow-[0_8px_25px_rgba(109,59,215,0.5)] hover:-translate-y-0.5 cursor-pointer'
                 }`}
             >
-              {!isCanvasGenerated ? (
-                <>
-                  <span className="material-symbols-outlined text-[18px]">lock</span>
-                  Unlock by generating Canvas
-                </>
-              ) : !!canvas?.feedback ? (
-                <div className="flex items-center gap-2 text-emerald-500 font-bold">
-                  <span className="material-symbols-outlined text-[18px]">check_circle</span>
-                  Feedback Ready to View
-                </div>
-              ) : isGeneratingFeedback ? (
+              {isGeneratingCanvas ? (
                 <>
                   <span className="material-symbols-outlined animate-spin text-[18px]">refresh</span>
-                  Analyzing...
+                  Generating...
                 </>
               ) : (
                 <>
-                  <span className="material-symbols-outlined text-[18px]">chat_bubble</span>
-                  Generate Feedback
+                  Generate Business Model Canvas
                 </>
               )}
             </button>
           </div>
         </div>
+      ) : (
+        <div className="mt-16">
+          <h2 className="text-xl font-extrabold text-on-surface mb-6 flex items-center gap-2">
+            <span className="material-symbols-outlined text-primary text-[24px]">history</span>
+            Canvas History
+          </h2>
+          <div className="flex flex-col gap-4">
+            {canvases.map((canvasItem) => (
+              <div 
+                key={canvasItem.id} 
+                className="group relative bg-white border border-slate-200 hover:border-primary/40 rounded-2xl p-5 sm:p-6 shadow-sm hover:shadow-md transition-all duration-300 flex flex-col sm:flex-row sm:items-center justify-between gap-5 overflow-hidden"
+              >
+                {/* Background glow on hover */}
+                <div className="absolute inset-0 bg-gradient-to-r from-primary/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none"></div>
 
-      </div>
+                {/* Left side: Version & Date */}
+                <div className="flex items-center gap-5 relative z-10">
+                  {/* Version Badge */}
+                  <div className="w-14 h-14 rounded-full bg-slate-50 border border-slate-100 flex items-center justify-center shrink-0 shadow-inner group-hover:bg-primary/5 group-hover:border-primary/20 transition-colors">
+                    <div className="flex flex-col items-center">
+                      <span className="text-[10px] font-bold text-slate-400 uppercase tracking-wider leading-none mb-0.5">Ver</span>
+                      <span className="text-xl font-black text-slate-700 leading-none group-hover:text-primary transition-colors">{canvasItem.version}</span>
+                    </div>
+                  </div>
+                  
+                  {/* Date info */}
+                  <div>
+                    <h3 className="text-base font-bold text-slate-800 mb-1">Business Model Canvas</h3>
+                    <div className="flex items-center gap-1.5 text-sm font-medium text-slate-500">
+                      <span className="material-symbols-outlined text-[16px]">calendar_today</span>
+                      {new Date(canvasItem.created_at).toLocaleDateString(undefined, { 
+                        year: 'numeric', month: 'short', day: 'numeric', 
+                        hour: '2-digit', minute: '2-digit'
+                      })}
+                    </div>
+                  </div>
+                </div>
+
+                {/* Right side: Actions */}
+                <div className="flex items-center gap-2 relative z-10 w-full sm:w-auto">
+                  {canvasItem.feedback ? (
+                    <a
+                      href={`/ideas/${id}/canvas/feedback?version=${canvasItem.version}`}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="flex-1 sm:flex-none flex items-center justify-center gap-1.5 px-3 py-1.5 rounded-md bg-emerald-50 hover:bg-emerald-100 text-emerald-700 text-xs font-bold transition-colors border border-emerald-200/50 shadow-sm cursor-pointer"
+                    >
+                      <span className="material-symbols-outlined text-[14px]">verified</span>
+                      View Feedback
+                    </a>
+                  ) : (
+                    <button
+                      onClick={() => handleGenerateFeedbackForVersion(canvasItem.id)}
+                      disabled={isGeneratingFeedback}
+                      className="flex-1 sm:flex-none flex items-center justify-center gap-1.5 px-3 py-1.5 rounded-md bg-orange-50 hover:bg-orange-100 text-orange-700 text-xs font-bold transition-colors border border-orange-200/50 shadow-sm disabled:opacity-50 cursor-pointer"
+                    >
+                      {isGeneratingFeedback ? (
+                        <span className="material-symbols-outlined animate-spin text-[14px]">refresh</span>
+                      ) : (
+                        <span className="material-symbols-outlined text-[14px]">magic_button</span>
+                      )}
+                      Generate Feedback
+                    </button>
+                  )}
+                  
+                  <a
+                    href={`/ideas/${id}/canvas?version=${canvasItem.version}`}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="flex-1 sm:flex-none flex items-center justify-center gap-1.5 px-3 py-1.5 rounded-md bg-slate-800 hover:bg-slate-700 text-white text-xs font-bold shadow-sm hover:shadow-md transition-all cursor-pointer"
+                  >
+                    <span className="material-symbols-outlined text-[14px]">open_in_new</span>
+                    Open Canvas
+                  </a>
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+      )}
     </div>
   );
 }

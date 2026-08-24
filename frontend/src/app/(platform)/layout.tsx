@@ -14,6 +14,8 @@ export default function DashboardLayout({
   const pathname = usePathname();
   const [user, setUser] = useState<any>(null);
   const [loading, setLoading] = useState(true);
+  const [currentIdeaName, setCurrentIdeaName] = useState<string | null>(null);
+
   useEffect(() => {
     const fetchUser = async () => {
       try {
@@ -28,6 +30,18 @@ export default function DashboardLayout({
     };
     fetchUser();
   }, [router]);
+
+  useEffect(() => {
+    const ideaIdMatch = pathname.match(/^\/ideas\/([^\/]+)/);
+    if (ideaIdMatch && ideaIdMatch[1] !== "new") {
+      const ideaId = ideaIdMatch[1];
+      fetchAPI(`/api/v1/ideas/${ideaId}`)
+        .then((data) => setCurrentIdeaName(data.title))
+        .catch(() => setCurrentIdeaName(null));
+    } else {
+      setCurrentIdeaName(null);
+    }
+  }, [pathname]);
 
   const handleLogout = () => {
     localStorage.removeItem("access_token");
@@ -55,6 +69,7 @@ export default function DashboardLayout({
       : "text-text-muted group-hover:text-primary transition-colors";
   };
 
+
   const getBreadcrumbs = (path: string) => {
     const crumbs: Array<{ label: string; href: string | null }> = [{ label: "StartGauge", href: null }];
     
@@ -67,7 +82,10 @@ export default function DashboardLayout({
       crumbs.push({ label: "New Idea", href: null });
     } else if (path.startsWith("/ideas/")) {
       crumbs.push({ label: "Ideas", href: "/ideas" });
-      crumbs.push({ label: "Idea Details", href: null });
+      
+      if (currentIdeaName) {
+        crumbs.push({ label: currentIdeaName, href: null });
+      }
     } else if (path.includes("/profile")) {
       crumbs.push({ label: "Profile", href: null });
     } else {
@@ -79,7 +97,7 @@ export default function DashboardLayout({
 
   return (
     <div className="bg-bg-deep font-body-md text-on-surface antialiased min-h-screen flex">
-      <aside className="fixed left-0 top-0 h-full w-sidebar-width bg-sidebar/90 backdrop-blur-xl z-50 flex flex-col border-r border-card-border/60">
+      <aside className="fixed left-0 top-0 h-full w-sidebar-width bg-sidebar/90 backdrop-blur-xl z-50 flex flex-col border-r border-card-border/60 print:hidden">
         <div className="h-header-height flex items-center px-gutter-lg mb-2">
           <span className="text-xl font-extrabold text-primary tracking-tight">StartGauge</span>
         </div>
@@ -150,8 +168,8 @@ export default function DashboardLayout({
         </div>
       </aside>
 
-      <div className="pl-sidebar-width flex-1 flex flex-col min-h-screen">
-        <header className="fixed top-0 left-sidebar-width right-0 h-header-height bg-bg-deep/80 backdrop-blur-md z-40 border-b border-card-border/60 px-gutter-lg flex items-center justify-between">
+      <div className="pl-sidebar-width flex-1 flex flex-col min-h-screen print:pl-0">
+        <header className="fixed top-0 left-sidebar-width right-0 h-header-height bg-bg-deep/80 backdrop-blur-md z-40 border-b border-card-border/60 px-gutter-lg flex items-center justify-between print:hidden">
           {/* Left: Greeting & Breadcrumbs */}
           <div className="flex flex-col justify-center">
             <div className="flex items-center gap-1.5 text-label-sm font-medium">
