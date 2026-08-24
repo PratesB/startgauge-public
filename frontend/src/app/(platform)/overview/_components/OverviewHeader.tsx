@@ -1,4 +1,4 @@
-export default function DashboardHeader() {
+export default function OverviewHeader() {
   return (
     <div className="pt-12 pb-10">
       <p className="text-[11px] font-bold tracking-[0.2em] text-slate-400 uppercase mb-4">Executive Overview</p>
