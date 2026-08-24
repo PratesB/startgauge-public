@@ -26,7 +26,7 @@ export default function LoginPage() {
       });
       
       localStorage.setItem("access_token", data.access_token);
-      router.push("/dashboard");
+      router.push("/overview");
       
     } catch (err: any) {
       setError(err.message || "Invalid credentials. Please try again.");

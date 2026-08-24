@@ -16,7 +16,7 @@ export default function OnboardingPage() {
       try {
         const user = await fetchAPI("/api/v1/users/me");
         if (user.professional_background) {
-          router.push("/dashboard");
+          router.push("/overview");
         } else {
           setIsChecking(false);
         }
@@ -46,7 +46,7 @@ export default function OnboardingPage() {
         method: "PATCH",
         body: JSON.stringify({ professional_background: background }),
       });
-      router.push("/dashboard");
+      router.push("/overview");
     } catch (err: any) {
       setError(err.message || "Failed to save profile. Please try again.");
       setLoading(false);
@@ -54,7 +54,7 @@ export default function OnboardingPage() {
   };
 
   const handleSkip = () => {
-    router.push("/dashboard");
+    router.push("/overview");
   };
 
   return (

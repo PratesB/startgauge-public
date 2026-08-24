@@ -13,7 +13,7 @@ export default function Home() {
         
         await fetchAPI("/api/v1/users/me");
         
-        router.push("/dashboard");
+        router.push("/overview");
       } catch (err) {
         router.push("/login");
       }

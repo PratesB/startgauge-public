@@ -48,10 +48,10 @@ export default function NotFound() {
           </p>
 
           <Link 
-            href="/dashboard"
+            href="/overview"
             className="group/btn w-full flex items-center justify-center gap-2 px-8 py-4 rounded-xl bg-gradient-to-r from-primary to-[#8247E5] text-white font-bold shadow-[0_0_20px_rgba(109,59,215,0.4)] hover:shadow-[0_0_40px_rgba(109,59,215,0.6)] transition-all duration-300 hover:-translate-y-1"
           >
-            Return to Dashboard
+            Return to Overview
           </Link>
         </div>
       </div>
