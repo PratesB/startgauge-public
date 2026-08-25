@@ -165,6 +165,25 @@ export default function IdeaDetailsPage() {
     }
   };
 
+  // Canvas Delete State
+  const [deletingCanvasId, setDeletingCanvasId] = useState<string | null>(null);
+
+  const handleDeleteCanvas = async (canvasId: string) => {
+    if (!window.confirm("Are you sure you want to delete this canvas version? This action cannot be undone.")) return;
+    setDeletingCanvasId(canvasId);
+    try {
+      await fetchAPI(`/api/v1/canvas/${canvasId}`, {
+        method: "DELETE",
+      });
+      setCanvases(prev => prev.filter(c => c.id !== canvasId));
+    } catch (err) {
+      console.error("Failed to delete canvas:", err);
+      alert("Failed to delete canvas.");
+    } finally {
+      setDeletingCanvasId(null);
+    }
+  };
+
   if (loading) {
     return (
       <div className="flex flex-col items-center justify-center min-h-[60vh]">
@@ -218,8 +237,10 @@ export default function IdeaDetailsPage() {
               canvases={canvases}
               isGeneratingCanvas={isGeneratingCanvas}
               isGeneratingFeedback={isGeneratingFeedback}
+              deletingCanvasId={deletingCanvasId}
               handleGenerateCanvas={handleGenerateCanvas}
               handleGenerateFeedbackForVersion={handleGenerateFeedbackForVersion}
+              handleDeleteCanvas={handleDeleteCanvas}
             />
 
           </div>
