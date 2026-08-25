@@ -218,3 +218,18 @@ async def logout_user(redis: Redis, refresh_token: str):
             
     except jwt.PyJWTError:
         pass
+
+
+async def delete_user(
+    session: AsyncSession, 
+    current_user: User, 
+    redis: Redis, 
+    refresh_token: str | None = None
+):
+
+    await session.delete(current_user)
+    await session.commit()
+    
+    if refresh_token:
+        await logout_user(redis, refresh_token)
+

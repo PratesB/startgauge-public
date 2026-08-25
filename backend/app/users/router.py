@@ -1,7 +1,7 @@
 from fastapi import APIRouter, Depends, status, Response, Request, HTTPException
 from sqlalchemy.ext.asyncio import AsyncSession
 from app.users.schemas import UserCreateSchema, UserReadSchema, UserLoginSchema, TokenSchema, UserUpdateSchema, UserPasswordUpdateSchema
-from app.users.services import create_user, authenticate_user, refresh_access_token, logout_user, update_user_profile, update_user_password
+from app.users.services import create_user, authenticate_user, refresh_access_token, logout_user, update_user_profile, update_user_password, delete_user
 from app.users.dependencies import get_current_user
 from app.users.models import User
 from redis.asyncio import Redis
@@ -125,3 +125,22 @@ async def update_password(
 ):
 
     await update_user_password(session, current_user, password_data)
+
+
+@router.delete("/me", status_code=status.HTTP_204_NO_CONTENT)
+async def delete_current_user(
+    request: Request,
+    response: Response,
+    current_user: User = Depends(get_current_user),
+    session: AsyncSession = Depends(get_async_session),
+    redis: Redis = Depends(get_redis)
+):
+    current_refresh_token = request.cookies.get("refresh_token")
+    await delete_user(session, current_user, redis, current_refresh_token)
+    response.delete_cookie(
+        key="refresh_token",
+        httponly=True,       
+        secure=True,         
+        samesite="lax",
+    )
+

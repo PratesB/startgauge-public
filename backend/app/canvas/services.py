@@ -1,5 +1,6 @@
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.future import select
+from sqlalchemy.orm import selectinload
 from fastapi import HTTPException, status
 from app.canvas.models import Canvas
 from app.canvas.schemas import CanvasSchema
@@ -52,6 +53,7 @@ async def get_canvases_by_idea(
     
     result = await db.execute(
         select(Canvas)
+        .options(selectinload(Canvas.feedback))
         .where(Canvas.idea_id == idea_id)
         .order_by(Canvas.version.desc())
     )
@@ -70,6 +72,7 @@ async def get_latest_canvas_by_idea(
     
     result = await db.execute(
         select(Canvas)
+        .options(selectinload(Canvas.feedback))
         .where(Canvas.idea_id == idea_id)
         .order_by(Canvas.version.desc())
         .limit(1)
@@ -92,7 +95,11 @@ async def get_canvas_by_id(
     user_id: str
 ) -> Canvas:
 
-    result = await db.execute(select(Canvas).where(Canvas.id == canvas_id, Canvas.user_id == user_id))
+    result = await db.execute(
+        select(Canvas)
+        .options(selectinload(Canvas.feedback))
+        .where(Canvas.id == canvas_id, Canvas.user_id == user_id)
+    )
     canvas = result.scalars().first()
 
     if not canvas:

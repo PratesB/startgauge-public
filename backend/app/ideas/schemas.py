@@ -1,13 +1,13 @@
-from pydantic import BaseModel, ConfigDict
-from typing import Optional
+from pydantic import BaseModel, ConfigDict, Field
+from typing import Optional, Annotated
 from datetime import datetime
 
 
 class IdeaBaseSchema(BaseModel):
-    title: str
-    description: str
+    title: Annotated[str, Field(max_length=200)]
+    description: Annotated[str, Field(max_length=3000)]
     country: str = "Finland"
-    team_background: Optional[str] = None
+    team_background: Annotated[Optional[str], Field(max_length=1500)] = None
 
 
 class IdeaCreateSchema(IdeaBaseSchema):
@@ -27,3 +27,4 @@ class IdeaUpdateSchema(BaseModel):
     title: Optional[str] = None
     description: Optional[str] = None
     team_background: Optional[str] = None
+    use_my_saved_background: Optional[bool] = None

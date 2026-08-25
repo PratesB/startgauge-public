@@ -18,5 +18,8 @@ class Settings:
     # Gemini AI
     GEMINI_API_KEY = config("GEMINI_API_KEY", cast=str)
     
+    # Frontend
+    FRONTEND_URL = config("FRONTEND_URL", cast=str, default="http://localhost:3000")
+
 
 settings = Settings()
