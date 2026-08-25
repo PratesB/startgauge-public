@@ -29,6 +29,7 @@ export default function IdeaDetailsPage() {
   const [canvases, setCanvases] = useState<any[]>([]);
   const [isGeneratingCanvas, setIsGeneratingCanvas] = useState(false);
   const [isGeneratingFeedback, setIsGeneratingFeedback] = useState(false);
+  const [aiError, setAiError] = useState<string | null>(null);
 
   // Edit State
   const [isEditing, setIsEditing] = useState(false);
@@ -95,13 +96,15 @@ export default function IdeaDetailsPage() {
 
   const handleGenerateCanvas = async () => {
     setIsGeneratingCanvas(true);
+    setAiError(null);
     try {
       const newCanvas = await fetchAPI(`/api/v1/ai/generate-canvas/${id}`, {
         method: "POST"
       });
       setCanvases(prev => [newCanvas, ...prev]);
-    } catch (err) {
+    } catch (err: any) {
       console.error("Failed to generate canvas:", err);
+      setAiError(err.message || "Failed to generate canvas. Please try again later.");
     } finally {
       setIsGeneratingCanvas(false);
     }
@@ -109,13 +112,15 @@ export default function IdeaDetailsPage() {
 
   const handleGenerateFeedbackForVersion = async (canvasId: string) => {
     setIsGeneratingFeedback(true);
+    setAiError(null);
     try {
       const newFeedback = await fetchAPI(`/api/v1/ai/generate-feedback/${canvasId}`, {
         method: "POST"
       });
       setCanvases(prev => prev.map(c => c.id === canvasId ? { ...c, feedback: newFeedback } : c));
-    } catch (err) {
+    } catch (err: any) {
       console.error("Failed to generate feedback:", err);
+      setAiError(err.message || "Failed to generate feedback. Please try again later.");
     } finally {
       setIsGeneratingFeedback(false);
     }
@@ -238,6 +243,7 @@ export default function IdeaDetailsPage() {
               isGeneratingCanvas={isGeneratingCanvas}
               isGeneratingFeedback={isGeneratingFeedback}
               deletingCanvasId={deletingCanvasId}
+              aiError={aiError}
               handleGenerateCanvas={handleGenerateCanvas}
               handleGenerateFeedbackForVersion={handleGenerateFeedbackForVersion}
               handleDeleteCanvas={handleDeleteCanvas}

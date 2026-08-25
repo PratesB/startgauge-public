@@ -26,21 +26,28 @@ async def generate_ai_canvas(
         
     user_background = idea.team_background if idea.team_background else "Background not informed by user"
     
-    research_report = await run_research_agent(
-        idea_title=idea.title,
-        idea_description=idea.description,
-        user_background=user_background,
-        country=idea.country
-    )
+    try:
+        research_report = await run_research_agent(
+            idea_title=idea.title,
+            idea_description=idea.description,
+            user_background=user_background,
+            country=idea.country
+        )
 
-    
-    canvas_schema = await run_business_agent(
-        idea_title=idea.title,
-        idea_description=idea.description,
-        user_background=user_background,
-        country=idea.country,
-        research_context=research_report
-    )
+        
+        canvas_schema = await run_business_agent(
+            idea_title=idea.title,
+            idea_description=idea.description,
+            user_background=user_background,
+            country=idea.country,
+            research_context=research_report
+        )
+    except Exception as e:
+        print(f"AI Generation Error: {e}")
+        raise HTTPException(
+            status_code=status.HTTP_503_SERVICE_UNAVAILABLE,
+            detail="The artificial intelligence service is currently unavailable or misconfigured. Please try again later."
+        )
     
     new_canvas = await create_canvas(
         db=db, 
@@ -80,11 +87,18 @@ async def generate_ai_feedback(
     canvas_json = canvas_schema.model_dump_json()
     
 
-    feedback_schema = await run_feedback_agent(
-        idea_description=idea.description,
-        user_background=user_background,
-        canvas_json=canvas_json
-    )
+    try:
+        feedback_schema = await run_feedback_agent(
+            idea_description=idea.description,
+            user_background=user_background,
+            canvas_json=canvas_json
+        )
+    except Exception as e:
+        print(f"AI Generation Error: {e}")
+        raise HTTPException(
+            status_code=status.HTTP_503_SERVICE_UNAVAILABLE,
+            detail="The artificial intelligence service is currently unavailable or misconfigured. Please try again later."
+        )
     
  
     new_feedback = Feedback(

@@ -6,6 +6,7 @@ interface CanvasHistoryProps {
   isGeneratingCanvas: boolean;
   isGeneratingFeedback: boolean;
   deletingCanvasId: string | null;
+  aiError?: string | null;
   handleGenerateCanvas: () => void;
   handleGenerateFeedbackForVersion: (canvasId: string) => void;
   handleDeleteCanvas: (canvasId: string) => void;
@@ -17,6 +18,7 @@ export function CanvasHistory({
   isGeneratingCanvas,
   isGeneratingFeedback,
   deletingCanvasId,
+  aiError,
   handleGenerateCanvas,
   handleGenerateFeedbackForVersion,
   handleDeleteCanvas
@@ -26,9 +28,17 @@ export function CanvasHistory({
   return (
     <div className="flex flex-col mt-8">
       <div className="flex items-center justify-between mb-6">
-        <h2 className="text-[20px] font-bold text-slate-900">
-          Canvas History
-        </h2>
+        <div className="flex items-center gap-3">
+          <h2 className="text-[20px] font-bold text-slate-900">
+            Canvas History
+          </h2>
+          {aiError && (
+            <span className="text-[12px] font-medium text-red-600 bg-red-50 px-2.5 py-1 rounded-md border border-red-100 flex items-center gap-1.5 animate-in fade-in slide-in-from-left-2 shadow-sm">
+              <span className="material-symbols-outlined text-[14px]">error</span>
+              <span>{aiError}</span>
+            </span>
+          )}
+        </div>
         {isCanvasGenerated && (
           <button
             onClick={handleGenerateCanvas}
