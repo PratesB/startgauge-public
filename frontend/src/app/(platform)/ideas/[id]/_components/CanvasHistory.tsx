@@ -31,7 +31,7 @@ export function CanvasHistory({
             disabled={isGeneratingCanvas}
             className="flex items-center gap-1.5 px-4 py-2 rounded-xl bg-amber-400 text-amber-950 text-[13px] font-bold hover:bg-amber-500 hover:shadow-lg hover:shadow-amber-400/40 transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer"
           >
-            <span className="material-symbols-outlined" style={{ fontSize: '16px' }}>
+            <span className={`material-symbols-outlined ${isGeneratingCanvas ? 'animate-spin' : ''}`} style={{ fontSize: '16px' }}>
               {isGeneratingCanvas ? 'sync' : 'add'}
             </span>
             {isGeneratingCanvas ? 'Generating...' : 'New Version'}
@@ -61,7 +61,7 @@ export function CanvasHistory({
                 : 'bg-primary text-white hover:bg-primary/90 hover:-translate-y-1 hover:shadow-lg hover:shadow-primary/30 animate-pulse'
             }`}
           >
-            <span className="material-symbols-outlined" style={{ fontSize: '20px' }}>
+            <span className={`material-symbols-outlined ${isGeneratingCanvas ? 'animate-spin' : ''}`} style={{ fontSize: '20px' }}>
               {isGeneratingCanvas ? 'sync' : 'auto_awesome'}
             </span>
             {isGeneratingCanvas ? 'Generating Canvas...' : 'Generate Business Model Canvas'}
@@ -123,7 +123,7 @@ export function CanvasHistory({
                         : 'bg-teal-100 border-teal-300 text-teal-800 hover:bg-teal-200 animate-pulse shadow-sm shadow-teal-200'
                     }`}
                   >
-                    <span className="material-symbols-outlined" style={{ fontSize: '15px' }}>{isGeneratingFeedback ? 'sync' : 'auto_awesome'}</span>
+                    <span className={`material-symbols-outlined ${isGeneratingFeedback ? 'animate-spin' : ''}`} style={{ fontSize: '15px' }}>{isGeneratingFeedback ? 'sync' : 'auto_awesome'}</span>
                     {isGeneratingFeedback ? 'Analyzing...' : 'Get Feedback'}
                   </button>
                 )}
