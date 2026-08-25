@@ -176,8 +176,7 @@ export default function DashboardLayout({
       </aside>
 
       <div 
-        className="flex-1 flex flex-col h-screen p-4 print:p-0 print:h-auto print:block transition-all duration-300 ease-in-out"
-        style={{ paddingLeft: isCollapsed ? '120px' : '272px' }}
+        className={`flex-1 flex flex-col h-screen p-4 print:!p-0 print:h-auto print:block transition-all duration-300 ease-in-out ${isCollapsed ? 'pl-[120px]' : 'pl-[272px]'}`}
       >
         
         {/* Floating Curved Main Container */}
