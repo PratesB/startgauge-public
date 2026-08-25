@@ -73,6 +73,7 @@ export default function DashboardLayout({
   }
 
   const isLinkActive = (path: string) => pathname === path;
+  const isIdeasActive = pathname === "/ideas" || (pathname.startsWith("/ideas/") && pathname !== "/ideas/new");
 
   const getBreadcrumbs = (path: string) => {
     const crumbs: Array<{ label: string; href: string | null }> = [{ label: "StartGauge", href: null }];
@@ -139,8 +140,8 @@ export default function DashboardLayout({
             <span className={`text-[14.5px] transition-all duration-300 overflow-hidden whitespace-nowrap ${isCollapsed ? 'w-0 opacity-0' : 'w-auto opacity-100'}`}>Overview</span>
           </Link>
           
-          <Link href="/ideas" className={`flex items-center rounded-[14px] transition-all duration-200 group ${isLinkActive("/ideas") ? 'bg-primary/10 text-primary font-bold' : 'text-slate-500 hover:bg-primary/5 hover:text-primary font-medium'} ${isCollapsed ? 'justify-center p-3' : 'px-4 py-3'}`}>
-            <span className={`material-symbols-outlined text-[20px] transition-all duration-300 ${isCollapsed ? '' : 'mr-4'} ${isLinkActive("/ideas") ? 'text-primary' : 'text-slate-400 group-hover:text-primary'}`}>article</span>
+          <Link href="/ideas" className={`flex items-center rounded-[14px] transition-all duration-200 group ${isIdeasActive ? 'bg-primary/10 text-primary font-bold' : 'text-slate-500 hover:bg-primary/5 hover:text-primary font-medium'} ${isCollapsed ? 'justify-center p-3' : 'px-4 py-3'}`}>
+            <span className={`material-symbols-outlined text-[20px] transition-all duration-300 ${isCollapsed ? '' : 'mr-4'} ${isIdeasActive ? 'text-primary' : 'text-slate-400 group-hover:text-primary'}`}>article</span>
             <span className={`text-[14.5px] transition-all duration-300 overflow-hidden whitespace-nowrap ${isCollapsed ? 'w-0 opacity-0' : 'w-auto opacity-100'}`}>Ideas</span>
           </Link>
 
