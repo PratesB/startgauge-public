@@ -144,8 +144,8 @@ export default function DashboardLayout({
             <span className={`text-[14.5px] transition-all duration-300 overflow-hidden whitespace-nowrap ${isCollapsed ? 'w-0 opacity-0' : 'w-auto opacity-100'}`}>Ideas</span>
           </Link>
 
-          <Link href="/overview/profile" className={`flex items-center rounded-[14px] transition-all duration-200 group ${isLinkActive("/overview/profile") ? 'bg-primary/10 text-primary font-bold' : 'text-slate-500 hover:bg-primary/5 hover:text-primary font-medium'} ${isCollapsed ? 'justify-center p-3' : 'px-4 py-3'}`}>
-            <span className={`material-symbols-outlined text-[20px] transition-all duration-300 ${isCollapsed ? '' : 'mr-4'} ${isLinkActive("/overview/profile") ? 'text-primary' : 'text-slate-400 group-hover:text-primary'}`}>person</span>
+          <Link href="/profile" className={`flex items-center rounded-[14px] transition-all duration-200 group ${isLinkActive("/profile") ? 'bg-primary/10 text-primary font-bold' : 'text-slate-500 hover:bg-primary/5 hover:text-primary font-medium'} ${isCollapsed ? 'justify-center p-3' : 'px-4 py-3'}`}>
+            <span className={`material-symbols-outlined text-[20px] transition-all duration-300 ${isCollapsed ? '' : 'mr-4'} ${isLinkActive("/profile") ? 'text-primary' : 'text-slate-400 group-hover:text-primary'}`}>person</span>
             <span className={`text-[14.5px] transition-all duration-300 overflow-hidden whitespace-nowrap ${isCollapsed ? 'w-0 opacity-0' : 'w-auto opacity-100'}`}>Profile</span>
           </Link>
           
