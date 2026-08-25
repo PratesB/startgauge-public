@@ -29,6 +29,7 @@ export default function IdeaDetailsPage() {
   const [canvases, setCanvases] = useState<any[]>([]);
   const [isGeneratingCanvas, setIsGeneratingCanvas] = useState(false);
   const [isGeneratingFeedback, setIsGeneratingFeedback] = useState(false);
+  const [aiError, setAiError] = useState<string | null>(null);
 
   // Edit State
   const [isEditing, setIsEditing] = useState(false);
@@ -95,13 +96,15 @@ export default function IdeaDetailsPage() {
 
   const handleGenerateCanvas = async () => {
     setIsGeneratingCanvas(true);
+    setAiError(null);
     try {
       const newCanvas = await fetchAPI(`/api/v1/ai/generate-canvas/${id}`, {
         method: "POST"
       });
       setCanvases(prev => [newCanvas, ...prev]);
-    } catch (err) {
+    } catch (err: any) {
       console.error("Failed to generate canvas:", err);
+      setAiError(err.message || "Failed to generate canvas. Please try again later.");
     } finally {
       setIsGeneratingCanvas(false);
     }
@@ -109,13 +112,15 @@ export default function IdeaDetailsPage() {
 
   const handleGenerateFeedbackForVersion = async (canvasId: string) => {
     setIsGeneratingFeedback(true);
+    setAiError(null);
     try {
       const newFeedback = await fetchAPI(`/api/v1/ai/generate-feedback/${canvasId}`, {
         method: "POST"
       });
       setCanvases(prev => prev.map(c => c.id === canvasId ? { ...c, feedback: newFeedback } : c));
-    } catch (err) {
+    } catch (err: any) {
       console.error("Failed to generate feedback:", err);
+      setAiError(err.message || "Failed to generate feedback. Please try again later.");
     } finally {
       setIsGeneratingFeedback(false);
     }
@@ -162,6 +167,25 @@ export default function IdeaDetailsPage() {
       console.error("Failed to delete idea:", err);
       alert("Failed to delete idea.");
       setIsDeleting(false);
+    }
+  };
+
+  // Canvas Delete State
+  const [deletingCanvasId, setDeletingCanvasId] = useState<string | null>(null);
+
+  const handleDeleteCanvas = async (canvasId: string) => {
+    if (!window.confirm("Are you sure you want to delete this canvas version? This action cannot be undone.")) return;
+    setDeletingCanvasId(canvasId);
+    try {
+      await fetchAPI(`/api/v1/canvas/${canvasId}`, {
+        method: "DELETE",
+      });
+      setCanvases(prev => prev.filter(c => c.id !== canvasId));
+    } catch (err) {
+      console.error("Failed to delete canvas:", err);
+      alert("Failed to delete canvas.");
+    } finally {
+      setDeletingCanvasId(null);
     }
   };
 
@@ -218,8 +242,11 @@ export default function IdeaDetailsPage() {
               canvases={canvases}
               isGeneratingCanvas={isGeneratingCanvas}
               isGeneratingFeedback={isGeneratingFeedback}
+              deletingCanvasId={deletingCanvasId}
+              aiError={aiError}
               handleGenerateCanvas={handleGenerateCanvas}
               handleGenerateFeedbackForVersion={handleGenerateFeedbackForVersion}
+              handleDeleteCanvas={handleDeleteCanvas}
             />
 
           </div>

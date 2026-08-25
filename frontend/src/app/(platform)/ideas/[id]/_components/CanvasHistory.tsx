@@ -5,8 +5,11 @@ interface CanvasHistoryProps {
   canvases: any[];
   isGeneratingCanvas: boolean;
   isGeneratingFeedback: boolean;
+  deletingCanvasId: string | null;
+  aiError?: string | null;
   handleGenerateCanvas: () => void;
   handleGenerateFeedbackForVersion: (canvasId: string) => void;
+  handleDeleteCanvas: (canvasId: string) => void;
 }
 
 export function CanvasHistory({
@@ -14,17 +17,28 @@ export function CanvasHistory({
   canvases,
   isGeneratingCanvas,
   isGeneratingFeedback,
+  deletingCanvasId,
+  aiError,
   handleGenerateCanvas,
-  handleGenerateFeedbackForVersion
+  handleGenerateFeedbackForVersion,
+  handleDeleteCanvas
 }: CanvasHistoryProps) {
   const isCanvasGenerated = canvases.length > 0;
 
   return (
     <div className="flex flex-col mt-8">
       <div className="flex items-center justify-between mb-6">
-        <h2 className="text-[20px] font-bold text-slate-900">
-          Canvas History
-        </h2>
+        <div className="flex items-center gap-3">
+          <h2 className="text-[20px] font-bold text-slate-900">
+            Canvas History
+          </h2>
+          {aiError && (
+            <span className="text-[12px] font-medium text-red-600 bg-red-50 px-2.5 py-1 rounded-md border border-red-100 flex items-center gap-1.5 animate-in fade-in slide-in-from-left-2 shadow-sm">
+              <span className="material-symbols-outlined text-[14px]">error</span>
+              <span>{aiError}</span>
+            </span>
+          )}
+        </div>
         {isCanvasGenerated && (
           <button
             onClick={handleGenerateCanvas}
@@ -136,6 +150,17 @@ export function CanvasHistory({
                   Open Canvas
                   <span className="material-symbols-outlined" style={{ fontSize: '15px' }}>arrow_outward</span>
                 </a>
+                
+                <button
+                  onClick={() => handleDeleteCanvas(canvasItem.id)}
+                  disabled={deletingCanvasId === canvasItem.id}
+                  className="flex-1 sm:flex-none text-center px-2 py-1.5 rounded-lg bg-red-50 text-red-500 hover:bg-red-100 hover:text-red-700 text-[12px] font-bold transition-colors flex items-center justify-center gap-1.5 cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed"
+                  title="Delete Canvas Version"
+                >
+                  <span className={`material-symbols-outlined ${deletingCanvasId === canvasItem.id ? 'animate-spin' : ''}`} style={{ fontSize: '18px' }}>
+                    {deletingCanvasId === canvasItem.id ? 'sync' : 'delete'}
+                  </span>
+                </button>
               </div>
             </div>
           ))}
