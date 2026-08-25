@@ -95,6 +95,8 @@ export default function DashboardLayout({
       }
     } else if (path.includes("/profile")) {
       crumbs.push({ label: "Profile", href: null });
+    } else if (path === "/onboarding") {
+      crumbs.push({ label: "Onboarding", href: null });
     } else {
       crumbs.push({ label: "App", href: null });
     }
