@@ -39,6 +39,10 @@ async def create_canvas(
     db.add(new_canvas)
     await db.commit()
     await db.refresh(new_canvas)
+    
+    # Explicitly set feedback to None to prevent MissingGreenlet error during Pydantic serialization
+    new_canvas.feedback = None
+    
     return new_canvas
 
 
@@ -127,8 +131,10 @@ async def update_canvas(
         
     db.add(canvas)
     await db.commit()
-    await db.refresh(canvas)
-    return canvas
+    
+    # Re-fetch the canvas to ensure relationships like feedback are eagerly loaded
+    # and avoid MissingGreenlet errors during serialization
+    return await get_canvas_by_id(db, canvas_id, user_id)
 
 
 
