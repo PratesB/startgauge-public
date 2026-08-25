@@ -1,7 +1,7 @@
 import uuid
-from sqlalchemy import Column, String, DateTime, Integer, Text
+from sqlalchemy import Column, String, Integer, Text
 from sqlalchemy.sql import func
-from app.core.database import Base
+from app.core.database import Base, UTCDateTime
 from sqlalchemy.orm import relationship
 
 class User(Base):
@@ -15,8 +15,8 @@ class User(Base):
     security_stamp = Column(Integer, default=1, nullable=False)
     professional_background = Column(Text, nullable=True)
 
-    created_at = Column(DateTime(timezone=True), server_default=func.now(), nullable=False)
-    updated_at = Column(DateTime(timezone=True), server_default=func.now(), onupdate=func.now(), nullable=False)
+    created_at = Column(UTCDateTime, server_default=func.now(), nullable=False)
+    updated_at = Column(UTCDateTime, server_default=func.now(), onupdate=func.now(), nullable=False)
 
     ideas = relationship("Idea", back_populates="user", cascade="all, delete-orphan")
     canvases = relationship("Canvas", back_populates="user", cascade="all, delete-orphan")

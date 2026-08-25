@@ -1,8 +1,8 @@
 import uuid
-from sqlalchemy import Column, String, DateTime, Text, ForeignKey, Integer
+from sqlalchemy import Column, String, Text, ForeignKey, Integer
 from sqlalchemy.orm import relationship
 from sqlalchemy.sql import func
-from app.core.database import Base
+from app.core.database import Base, UTCDateTime
 
 
 
@@ -27,8 +27,8 @@ class Canvas(Base):
     key_partnerships = Column(Text, nullable=True)
     cost_structure = Column(Text, nullable=True)
     
-    created_at = Column(DateTime(timezone=True), server_default=func.now(), nullable=False)
-    updated_at = Column(DateTime(timezone=True), server_default=func.now(), onupdate=func.now(), nullable=False)
+    created_at = Column(UTCDateTime, server_default=func.now(), nullable=False)
+    updated_at = Column(UTCDateTime, server_default=func.now(), onupdate=func.now(), nullable=False)
 
 
     idea = relationship("Idea", back_populates="canvases")
@@ -47,7 +47,7 @@ class Feedback(Base):
     execution_gaps = Column(Text, nullable=False)
     recommended_actions = Column(Text, nullable=False)
     
-    created_at = Column(DateTime(timezone=True), server_default=func.now(), nullable=False)
-    updated_at = Column(DateTime(timezone=True), server_default=func.now(), onupdate=func.now(), nullable=False)
+    created_at = Column(UTCDateTime, server_default=func.now(), nullable=False)
+    updated_at = Column(UTCDateTime, server_default=func.now(), onupdate=func.now(), nullable=False)
 
     canvas = relationship("Canvas", back_populates="feedback")
