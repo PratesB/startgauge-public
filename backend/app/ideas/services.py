@@ -26,6 +26,12 @@ async def create_idea(
         
     final_background = "\n\n".join(background_parts) if background_parts else None
 
+    if not final_background:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="A team background or professional background is required to create an idea."
+        )
+
     new_idea = Idea(
         title=idea_input.title,
         description=idea_input.description,

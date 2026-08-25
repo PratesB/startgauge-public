@@ -13,7 +13,7 @@ class Idea(Base):
     title = Column(String(200), index=True, nullable=False)
     description = Column(Text, nullable=False)
     country = Column(String(100), default="Finland", nullable=False)
-    team_background = Column(Text, nullable=True)
+    team_background = Column(Text, nullable=False)
     
     user_id = Column(String(36), ForeignKey("users.id", ondelete="CASCADE"), nullable=False)
     
