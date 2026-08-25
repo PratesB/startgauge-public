@@ -75,12 +75,20 @@ async def update_idea(
     db: AsyncSession, 
     idea_id: str, 
     update_schema: IdeaUpdateSchema, 
-    user_id: str
+    user: User
 ) -> Idea:
 
-    idea = await get_idea_by_id(db, idea_id, user_id)
+    idea = await get_idea_by_id(db, idea_id, user.id)
     
     update_dict = update_schema.model_dump(exclude_unset=True)
+
+    if 'use_my_saved_background' in update_dict:
+        use_saved = update_dict.pop('use_my_saved_background')
+        if use_saved and user.professional_background:
+            tb = update_dict.get('team_background', idea.team_background) or ""
+            if user.professional_background not in tb:
+                tb = f"{user.professional_background}\n\n{tb}".strip()
+                update_dict['team_background'] = tb
 
     for key, value in update_dict.items():
         setattr(idea, key, value)

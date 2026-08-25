@@ -27,3 +27,4 @@ class IdeaUpdateSchema(BaseModel):
     title: Optional[str] = None
     description: Optional[str] = None
     team_background: Optional[str] = None
+    use_my_saved_background: Optional[bool] = None

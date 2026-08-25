@@ -56,7 +56,7 @@ async def update_existing_idea(
     current_user: User = Depends(get_current_user),
     db: AsyncSession = Depends(get_async_session)
 ):
-    return await update_idea(db=db, idea_id=idea_id, update_schema=update_schema, user_id=current_user.id)
+    return await update_idea(db=db, idea_id=idea_id, update_schema=update_schema, user=current_user)
 
 
 
