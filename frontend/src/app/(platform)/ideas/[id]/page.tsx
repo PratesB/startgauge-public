@@ -6,6 +6,7 @@ import { fetchAPI } from "@/lib/api";
 import { IdeaHero } from "./_components/IdeaHero";
 import { TeamBackground } from "./_components/TeamBackground";
 import { CanvasHistory } from "./_components/CanvasHistory";
+import { useTaskContext } from "../../_components/TaskContext";
 
 interface Idea {
   id: string;
@@ -27,9 +28,11 @@ export default function IdeaDetailsPage() {
   const [error, setError] = useState<string | null>(null);
 
   const [canvases, setCanvases] = useState<any[]>([]);
-  const [isGeneratingCanvas, setIsGeneratingCanvas] = useState(false);
-  const [isGeneratingFeedback, setIsGeneratingFeedback] = useState(false);
   const [aiError, setAiError] = useState<string | null>(null);
+
+  const { addTask, isGeneratingForIdea, completedTasks, clearCompletedTaskFlag } = useTaskContext();
+  const isGeneratingCanvas = isGeneratingForIdea(id, "canvas");
+  const isGeneratingFeedback = isGeneratingForIdea(id, "feedback");
 
   // Edit State
   const [isEditing, setIsEditing] = useState(false);
@@ -84,6 +87,19 @@ export default function IdeaDetailsPage() {
     }
   }, [idea]);
 
+  // Listen for task completion to refresh canvas history
+  useEffect(() => {
+    const completedTask = completedTasks.find((t: any) => t.ideaId === id);
+    if (completedTask) {
+      // Re-fetch history
+      fetchAPI(`/api/v1/canvas/${id}/history`)
+        .then(data => setCanvases(data || []))
+        .catch(() => {});
+      
+      clearCompletedTaskFlag(completedTask.taskId);
+    }
+  }, [completedTasks, id, clearCompletedTaskFlag]);
+
   const handleEditChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
     const { name, value, type } = e.target;
     if (type === "checkbox") {
@@ -95,34 +111,30 @@ export default function IdeaDetailsPage() {
   };
 
   const handleGenerateCanvas = async () => {
-    setIsGeneratingCanvas(true);
+    if (!idea) return;
     setAiError(null);
     try {
-      const newCanvas = await fetchAPI(`/api/v1/ai/generate-canvas/${id}`, {
+      const response = await fetchAPI(`/api/v1/ai/generate-canvas/${id}`, {
         method: "POST"
       });
-      setCanvases(prev => [newCanvas, ...prev]);
+      addTask({ taskId: response.task_id, type: "canvas", ideaId: id, ideaTitle: idea.title });
     } catch (err: any) {
       console.error("Failed to generate canvas:", err);
-      setAiError(err.message || "Failed to generate canvas. Please try again later.");
-    } finally {
-      setIsGeneratingCanvas(false);
+      setAiError(err.message || "Failed to start canvas generation. Please try again later.");
     }
   };
 
   const handleGenerateFeedbackForVersion = async (canvasId: string) => {
-    setIsGeneratingFeedback(true);
+    if (!idea) return;
     setAiError(null);
     try {
-      const newFeedback = await fetchAPI(`/api/v1/ai/generate-feedback/${canvasId}`, {
+      const response = await fetchAPI(`/api/v1/ai/generate-feedback/${canvasId}`, {
         method: "POST"
       });
-      setCanvases(prev => prev.map(c => c.id === canvasId ? { ...c, feedback: newFeedback } : c));
+      addTask({ taskId: response.task_id, type: "feedback", ideaId: id, ideaTitle: idea.title, canvasId });
     } catch (err: any) {
       console.error("Failed to generate feedback:", err);
-      setAiError(err.message || "Failed to generate feedback. Please try again later.");
-    } finally {
-      setIsGeneratingFeedback(false);
+      setAiError(err.message || "Failed to start feedback generation. Please try again later.");
     }
   };
 

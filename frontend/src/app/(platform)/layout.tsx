@@ -4,6 +4,8 @@ import { useEffect, useState } from "react";
 import { fetchAPI } from "@/lib/api";
 import { useRouter, usePathname } from "next/navigation";
 import Link from "next/link";
+import { TaskProvider } from "./_components/TaskContext";
+import { GlobalTaskNotification } from "./_components/GlobalTaskNotification";
 
 const FINNISH_MARKET_NEWS = [
   { tag: "Economy", text: "Finland's economy shows resilience with tech exports driving steady growth." },
@@ -101,6 +103,7 @@ export default function DashboardLayout({
   };
 
   return (
+    <TaskProvider>
     <div className="bg-[#f0f2f5] font-sans text-slate-800 antialiased min-h-screen flex">
       {/* Floating Curved Sidebar */}
       <aside 
@@ -258,6 +261,8 @@ export default function DashboardLayout({
           </main>
         </div>
       </div>
+      <GlobalTaskNotification />
     </div>
+    </TaskProvider>
   );
 }
