@@ -1,8 +1,8 @@
 import uuid
-from sqlalchemy import Column, String, Text, ForeignKey, UniqueConstraint
+from sqlalchemy import Column, String, Text, ForeignKey, UniqueConstraint, DateTime
 from sqlalchemy.orm import relationship
 from sqlalchemy.sql import func
-from app.core.database import Base, UTCDateTime
+from app.core.database import Base
 
 class Idea(Base):
     __tablename__ = "ideas"
@@ -17,8 +17,8 @@ class Idea(Base):
     
     user_id = Column(String(36), ForeignKey("users.id", ondelete="CASCADE"), nullable=False)
     
-    created_at = Column(UTCDateTime, server_default=func.now(), nullable=False)
-    updated_at = Column(UTCDateTime, server_default=func.now(), onupdate=func.now(), nullable=False)
+    created_at = Column(DateTime(timezone=True), server_default=func.now(), nullable=False)
+    updated_at = Column(DateTime(timezone=True), server_default=func.now(), onupdate=func.now(), nullable=False)
 
     user = relationship("User", back_populates="ideas")
     canvases = relationship("Canvas", back_populates="idea", cascade="all, delete-orphan")
