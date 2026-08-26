@@ -3,6 +3,7 @@
 import { useState, useEffect } from "react";
 import { fetchAPI } from "@/lib/api";
 import { useRouter } from "next/navigation";
+import toast from "react-hot-toast";
 
 export default function OnboardingPage() {
   const router = useRouter();
@@ -46,9 +47,15 @@ export default function OnboardingPage() {
         method: "PATCH",
         body: JSON.stringify({ professional_background: background }),
       });
-      router.push("/overview");
+      toast.success("Profile updated successfully!");
+      
+      // Delay redirect slightly so user can read the toast
+      setTimeout(() => {
+        router.push("/overview");
+      }, 1000);
     } catch (err: any) {
-      setError(err.message || "Failed to save profile. Please try again.");
+      console.error(err);
+      toast.error("Failed to update profile.");
       setLoading(false);
     }
   };
@@ -117,7 +124,7 @@ export default function OnboardingPage() {
                 <button
                   type="button"
                   onClick={handleSkip}
-                  className="text-sm font-semibold text-gray-500 hover:text-gray-900 transition-colors px-4 py-2 rounded-lg hover:bg-gray-100"
+                  className="text-sm font-semibold text-gray-500 hover:text-gray-900 transition-colors px-4 py-2 rounded-lg hover:bg-gray-100 cursor-pointer"
                 >
                   Skip for now
                 </button>
@@ -125,9 +132,9 @@ export default function OnboardingPage() {
                   type="button"
                   onClick={handleSave}
                   disabled={loading || background.trim().length === 0}
-                  className="inline-flex items-center px-8 py-3 border border-transparent text-base font-bold rounded-xl shadow-md text-white bg-purple-700 hover:bg-purple-800 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-purple-500 disabled:opacity-60 disabled:cursor-not-allowed transition-all"
+                  className="inline-flex items-center px-8 py-3 border border-transparent text-base font-bold rounded-xl shadow-md text-white bg-purple-700 hover:bg-purple-800 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-purple-500 disabled:opacity-60 disabled:cursor-not-allowed transition-all cursor-pointer"
                 >
-                  {loading ? "Saving..." : "Save & Continue"}
+                  {loading ? "Saving..." : "Save and Continue"}
                   {!loading && (
                     <svg xmlns="http://www.w3.org/2000/svg" className="ml-2 h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
                       <path fillRule="evenodd" d="M12.293 5.293a1 1 0 011.414 0l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414-1.414L14.586 11H3a1 1 0 110-2h11.586l-2.293-2.293a1 1 0 010-1.414z" clipRule="evenodd" />

@@ -129,19 +129,20 @@ export default function NewIdeaForm() {
           <div>
             <div className="flex justify-between items-end mb-1">
               <label htmlFor="team_background" className="block text-[11px] font-bold text-slate-500 uppercase tracking-wider">
-                Team Background <span className="text-slate-400 font-normal capitalize">(Optional)</span>
+                Team Background {!formData.use_my_saved_background && <span className="text-red-500">*</span>}
               </label>
               <span className={`text-[11px] font-medium ${formData.team_background.length >= 1500 ? 'text-red-500' : 'text-slate-400'}`}>
                 {formData.team_background.length} / 1500
               </span>
             </div>
-            <p className="text-[13px] text-slate-500 mb-3">Any specific unfair advantages or deep expertise?</p>
+            <p className="text-[13px] text-slate-500 mb-3">Detail your team's expertise below, or turn on the switch to automatically use your saved Global Profile instead.</p>
             
             <div className="relative">
               <textarea 
                 id="team_background" 
                 name="team_background"
                 rows={4}
+                required={!formData.use_my_saved_background}
                 maxLength={1500}
                 value={formData.team_background}
                 onChange={handleChange}
@@ -173,7 +174,7 @@ export default function NewIdeaForm() {
                 <div className="w-10 h-[22px] bg-slate-200 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-slate-300 after:border after:rounded-full after:h-[18px] after:w-[18px] after:transition-all peer-checked:bg-primary transition-colors"></div>
               </div>
               <span className="text-[13px] font-medium text-slate-600 group-hover:text-primary transition-colors">
-                Use my saved Global Profile
+                Skip typing and use my saved Global Profile
               </span>
             </label>
           </div>

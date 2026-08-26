@@ -6,6 +6,7 @@ import { useRouter, usePathname } from "next/navigation";
 import Link from "next/link";
 import { TaskProvider } from "./_components/TaskContext";
 import { GlobalTaskNotification } from "./_components/GlobalTaskNotification";
+import { Toaster } from "react-hot-toast";
 
 const FINNISH_MARKET_NEWS = [
   { tag: "Economy", text: "Finland's economy shows resilience with tech exports driving steady growth." },
@@ -95,6 +96,8 @@ export default function DashboardLayout({
       }
     } else if (path.includes("/profile")) {
       crumbs.push({ label: "Profile", href: null });
+    } else if (path === "/onboarding") {
+      crumbs.push({ label: "Onboarding", href: null });
     } else {
       crumbs.push({ label: "App", href: null });
     }
@@ -262,6 +265,7 @@ export default function DashboardLayout({
         </div>
       </div>
       <GlobalTaskNotification />
+      <Toaster position="bottom-right" />
     </div>
     </TaskProvider>
   );

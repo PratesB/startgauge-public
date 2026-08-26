@@ -25,8 +25,10 @@ def generate_canvas_task(self, idea_id: str, user_id: str):
         return {"status": "completed", "canvas_id": canvas.id}
     except Exception as e:
         print(f"Error in generate_canvas_task: {e}")
-        # Re-raise the exception so Celery marks the task as failed
-        raise
+        # If it's an HTTPException, extract the clean detail message
+        if hasattr(e, "detail"):
+            raise Exception(e.detail)
+        raise e
 
 @celery_app.task(bind=True, name="generate_feedback_task")
 def generate_feedback_task(self, canvas_id: str, user_id: str):
@@ -44,4 +46,6 @@ def generate_feedback_task(self, canvas_id: str, user_id: str):
         return {"status": "completed", "feedback_id": feedback.id}
     except Exception as e:
         print(f"Error in generate_feedback_task: {e}")
-        raise
+        if hasattr(e, "detail"):
+            raise Exception(e.detail)
+        raise e

@@ -3,6 +3,7 @@
 import { useState, useEffect } from "react";
 import { useParams, useRouter } from "next/navigation";
 import { fetchAPI } from "@/lib/api";
+import toast from "react-hot-toast";
 import { IdeaHero } from "./_components/IdeaHero";
 import { TeamBackground } from "./_components/TeamBackground";
 import { CanvasHistory } from "./_components/CanvasHistory";
@@ -149,7 +150,7 @@ export default function IdeaDetailsPage() {
       setIsEditing(false);
     } catch (err) {
       console.error("Failed to update idea:", err);
-      alert("Failed to update idea.");
+      toast.error("Failed to update idea.");
     } finally {
       setIsSaving(false);
     }
@@ -177,7 +178,7 @@ export default function IdeaDetailsPage() {
       router.push("/ideas");
     } catch (err) {
       console.error("Failed to delete idea:", err);
-      alert("Failed to delete idea.");
+      toast.error("Failed to delete idea.");
       setIsDeleting(false);
     }
   };
@@ -195,7 +196,7 @@ export default function IdeaDetailsPage() {
       setCanvases(prev => prev.filter(c => c.id !== canvasId));
     } catch (err) {
       console.error("Failed to delete canvas:", err);
-      alert("Failed to delete canvas.");
+      toast.error("Failed to delete canvas.");
     } finally {
       setDeletingCanvasId(null);
     }
