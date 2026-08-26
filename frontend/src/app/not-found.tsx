@@ -8,10 +8,7 @@ export default function NotFound() {
       <div className="absolute top-10 left-10 w-64 h-64 bg-primary/30 blur-[80px] rounded-full pointer-events-none animate-pulse" style={{ animationDuration: '4s' }}></div>
       <div className="absolute bottom-10 right-10 w-96 h-96 bg-fuchsia-600/20 blur-[100px] rounded-full pointer-events-none animate-pulse" style={{ animationDuration: '6s' }}></div>
 
-      {/* Floating 3D Icon in Background */}
-      <div className="absolute top-1/4 right-1/4 w-32 h-32 opacity-20 pointer-events-none mix-blend-screen transform rotate-12 blur-[2px]">
-        <img src="/icons/icon_ideas.jpg" alt="" className="w-full h-full object-cover rounded-full" />
-      </div>
+
 
       <div className="relative z-10 flex flex-col items-center text-center">
         {/* 3D 404 Text */}
