@@ -3,6 +3,7 @@
 import { useState, useEffect } from "react";
 import { fetchAPI } from "@/lib/api";
 import { useRouter } from "next/navigation";
+import toast from "react-hot-toast";
 
 export default function OnboardingPage() {
   const router = useRouter();
@@ -46,9 +47,15 @@ export default function OnboardingPage() {
         method: "PATCH",
         body: JSON.stringify({ professional_background: background }),
       });
-      router.push("/overview");
+      toast.success("Profile updated successfully!");
+      
+      // Delay redirect slightly so user can read the toast
+      setTimeout(() => {
+        router.push("/overview");
+      }, 1000);
     } catch (err: any) {
-      setError(err.message || "Failed to save profile. Please try again.");
+      console.error(err);
+      toast.error("Failed to update profile.");
       setLoading(false);
     }
   };

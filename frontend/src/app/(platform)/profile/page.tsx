@@ -3,6 +3,7 @@
 import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { fetchAPI } from "@/lib/api";
+import toast from "react-hot-toast";
 
 import { ProfileDetails } from "./_components/ProfileDetails";
 import { ChangePassword } from "./_components/ChangePassword";
@@ -63,10 +64,9 @@ export default function ProfilePage() {
         method: "PATCH",
         body: JSON.stringify(profileForm),
       });
-      alert("Profile updated successfully!");
-      window.location.reload();
+      toast.success("Profile updated successfully!");
     } catch (err: any) {
-      alert(err.message || "Failed to update profile");
+      toast.error(err.message || "Failed to update profile");
     } finally {
       setIsSavingProfile(false);
     }
@@ -93,7 +93,7 @@ export default function ProfilePage() {
           new_password: passwordForm.new_password,
         }),
       });
-      alert("Password updated successfully!");
+      toast.success("Password updated successfully!");
       setPasswordForm({ old_password: "", new_password: "", confirm_password: "" });
     } catch (err: any) {
       setPasswordError(err.message || "Failed to update password");
@@ -115,7 +115,7 @@ export default function ProfilePage() {
       });
       router.push("/login");
     } catch (err: any) {
-      alert(err.message || "Failed to delete account");
+      toast.error(err.message || "Failed to delete account");
       setIsDeleting(false);
     }
   };

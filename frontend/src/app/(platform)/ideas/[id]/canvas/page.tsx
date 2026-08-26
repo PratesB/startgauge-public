@@ -3,6 +3,7 @@
 import { useState, useEffect, Suspense } from "react";
 import { useParams, useRouter, useSearchParams } from "next/navigation";
 import { fetchAPI } from "@/lib/api";
+import toast from "react-hot-toast";
 
 export interface Canvas {
   id: string;
@@ -83,7 +84,7 @@ function CanvasPage() {
       // Navigate to the newly created version
       router.push(`/ideas/${id}/canvas?version=${newCanvas.version}`);
     } catch (err: any) {
-      alert("Failed to save canvas: " + err.message);
+      toast.error("Failed to save canvas: " + err.message);
     } finally {
       setIsSaving(false);
     }
