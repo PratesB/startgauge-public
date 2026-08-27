@@ -1,5 +1,5 @@
 // Backend URL FastAPI
-const API_URL = "http://localhost:8000";
+const API_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000";
 
 let isRefreshing = false;
 let failedQueue: Array<{ resolve: (token: string | null) => void; reject: (err: any) => void }> = [];
