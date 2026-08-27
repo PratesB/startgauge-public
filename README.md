@@ -61,10 +61,13 @@ You need to have the following installed on your machine:
    ```
 
 2. **Configure Environment Variables**
-   The project requires an environment file to run. We have provided an example file.
+   Both the Backend and Frontend require environment files to run. We have provided example files for both.
    ```bash
-   # Copy the example file to create your local .env
+   # Create the Backend environment file
    cp backend/.env.example backend/.env
+   
+   # Create the Frontend environment file
+   cp frontend/.env.example frontend/.env.local
    ```
    *Note: Open `backend/.env` and insert your actual `GEMINI_API_KEY` and change the `SECRET_KEY`.*
 
